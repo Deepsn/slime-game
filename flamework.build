@@ -2,7 +2,23 @@
 	"version": 1,
 	"flameworkVersion": "1.0.0-beta.22",
 	"identifiers": {
-		"slime-game:out/client/controllers/overhead@overhead": "client/controllers/overhead@overhead"
+		"slime-game:out/client/controllers/overhead@overhead": "client/controllers/overhead@overhead",
+		"slime-game:out/client/controllers/Overhead@Overhead": "client/controllers/Overhead@Overhead",
+		"slime-game:out/client/controllers/OnCharacterAdded@CharacterAdded": "client/controllers/OnCharacterAdded@CharacterAdded",
+		"slime-game:out/client/controllers/OnCharacterAdded@OnCharacterAdded": "client/controllers/OnCharacterAdded@OnCharacterAdded",
+		"slime-game:out/client/controllers/OnPlayerAdded@PlayerAdded": "client/controllers/OnPlayerAdded@PlayerAdded",
+		"slime-game:out/client/controllers/OnPlayerAdded@OnPlayerAdded": "client/controllers/OnPlayerAdded@OnPlayerAdded",
+		"slime-game:out/client/controllers/PlayerJoinController@PlayerAdded": "client/controllers/PlayerJoinController@PlayerAdded",
+		"slime-game:out/client/controllers/PlayerJoinController@OnPlayerAdded": "client/controllers/PlayerJoinController@OnPlayerAdded",
+		"slime-game:out/client/controllers/CharacterAddController@CharacterAdded": "client/controllers/CharacterAddController@CharacterAdded",
+		"slime-game:out/client/controllers/CharacterAddController@OnCharacterAdded": "client/controllers/CharacterAddController@OnCharacterAdded",
+		"slime-game:out/client/controllers/PlayerJoinController@PlayerJoin": "client/controllers/PlayerJoinController@PlayerJoin",
+		"slime-game:out/client/controllers/CharacterAddController@CharacterAdd": "client/controllers/CharacterAddController@CharacterAdd",
+		"slime-game:out/client/controllers/CharacterAddController@OnCharacter": "client/controllers/CharacterAddController@OnCharacter",
+		"slime-game:out/client/controllers/PlayerJoinController@OnPlayer": "client/controllers/PlayerJoinController@OnPlayer",
+		"slime-game:out/client/controllers/Overhead@OverheadController": "client/controllers/Overhead@OverheadController",
+		"slime-game:out/client/controllers/OverheadController@OverheadController": "client/controllers/OverheadController@OverheadController",
+		"slime-game:out/client/components/Overhead@Overhead": "client/components/Overhead@Overhead"
 	},
 	"metadata": {}
 }

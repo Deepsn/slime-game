@@ -9,5 +9,10 @@
 	},
 	"ignorePatterns": ["/out"],
 	"plugins": ["@typescript-eslint", "roblox-ts"],
-	"extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:roblox-ts/recommended"]
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:roblox-ts/recommended",
+		"prettier"
+	]
 }
