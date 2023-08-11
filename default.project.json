@@ -1,0 +1,63 @@
+{
+	"name": "roblox-ts-game",
+	"globIgnorePaths": ["**/package.json", "**/tsconfig.json"],
+	"tree": {
+		"$className": "DataModel",
+		"ServerScriptService": {
+			"$ignoreUnknownInstances": true,
+			"$className": "ServerScriptService",
+			"TS": {
+				"$path": "out/server"
+			}
+		},
+		"ReplicatedStorage": {
+			"$ignoreUnknownInstances": true,
+			"$className": "ReplicatedStorage",
+			"rbxts_include": {
+				"$path": "include",
+				"node_modules": {
+					"$className": "Folder",
+					"@rbxts": {
+						"$path": "node_modules/@rbxts"
+					},
+					"@flamework": {
+						"$path": "node_modules/@flamework"
+					}
+				}
+			},
+			"TS": {
+				"$path": "out/shared"
+			}
+		},
+		"StarterPlayer": {
+			"$className": "StarterPlayer",
+			"StarterPlayerScripts": {
+				"$ignoreUnknownInstances": true,
+				"$className": "StarterPlayerScripts",
+				"TS": {
+					"$path": "out/client"
+				}
+			},
+			"$ignoreUnknownInstances": true
+		},
+		"Workspace": {
+			"$className": "Workspace",
+			"$ignoreUnknownInstances": true,
+			"$properties": {
+				"FilteringEnabled": true
+			}
+		},
+		"HttpService": {
+			"$className": "HttpService",
+			"$properties": {
+				"HttpEnabled": true
+			}
+		},
+		"SoundService": {
+			"$className": "SoundService",
+			"$properties": {
+				"RespectFilteringEnabled": true
+			}
+		}
+	}
+}
