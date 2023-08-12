@@ -1,11 +1,12 @@
 interface ReplicatedStorage {
 	assets: Folder & {
-		overhead: BillboardGui & {
+		Overhead: BillboardGui & {
 			bg: Frame & {
 				plr_name: TextLabel;
 				Level: TextLabel;
 				Kills: TextLabel;
 			};
 		};
+		PlayerMesh: MeshPart;
 	};
 }
