@@ -26,6 +26,7 @@
 	"dependencies": {
 		"@flamework/components": "^1.0.0-beta.22",
 		"@flamework/core": "^1.0.0-beta.22",
+		"@rbxts/log": "^0.6.3",
 		"@rbxts/services": "^1.5.1",
 		"@rbxts/t": "^3.1.0"
 	}

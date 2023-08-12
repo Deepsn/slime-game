@@ -28,7 +28,8 @@
 		"slime-game:out/server/services/CharacterAddService@OnCharacter": "server/services/CharacterAddService@OnCharacter",
 		"slime-game:out/server/services/PlayerJoinService@PlayerJoin": "server/services/PlayerJoinService@PlayerJoin",
 		"slime-game:out/server/services/PlayerJoinService@OnPlayer": "server/services/PlayerJoinService@OnPlayer",
-		"slime-game:out/client/controllers/CameraController@CameraController": "client/controllers/CameraController@CameraController"
+		"slime-game:out/client/controllers/CameraController@CameraController": "client/controllers/CameraController@CameraController",
+		"slime-game:out/client/controllers/MovementController@MovementController": "client/controllers/MovementController@MovementController"
 	},
 	"metadata": {}
 }

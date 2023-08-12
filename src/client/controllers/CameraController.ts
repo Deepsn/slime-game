@@ -14,7 +14,7 @@ export default class CameraController implements OnCharacter {
 		const root = character.WaitForChild("Root", 10) as BasePart | undefined;
 
 		if (root) {
-			this.camera.CameraType = Enum.CameraType.Follow;
+			this.camera.CameraType = Enum.CameraType.Track;
 			this.camera.CameraSubject = root;
 		}
 	}
