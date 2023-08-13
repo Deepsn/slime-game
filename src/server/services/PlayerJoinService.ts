@@ -1,35 +1,38 @@
-import { OnStart, Modding, Service } from "@flamework/core";
+import { OnStart, Modding, Service, OnInit } from "@flamework/core";
 import { Players } from "@rbxts/services";
 
 export interface OnPlayer {
-	onPlayerAdd?(player: Player): void;
-	onPlayerRemove?(player: Player): void;
+	onPlayerJoin?(player: Player): void;
+	onPlayerLeave?(player: Player): void;
 }
 
-@Service()
-class PlayerJoin implements OnStart {
-	onStart(): void {
-		const listeners = new Set<OnPlayer>();
+@Service({ loadOrder: 2 })
+class PlayerJoin implements OnInit, OnStart {
+	private listeners = new Set<OnPlayer>();
 
-		Modding.onListenerAdded<OnPlayer>((listener) => listeners.add(listener));
-		Modding.onListenerRemoved<OnPlayer>((listener) => listeners.delete(listener));
-
-		Players.PlayerAdded.Connect((player) => {
-			for (const listener of listeners) {
-				task.spawn(() => listener.onPlayerAdd?.(player));
-			}
-		});
-
-		Players.PlayerRemoving.Connect((player) => {
-			for (const listener of listeners) {
-				task.spawn(() => listener.onPlayerRemove?.(player));
-			}
-		});
+	onInit(): void | Promise<void> {
+		Players.PlayerAdded.Connect((player) => this.onPlayerJoin(player));
+		Players.PlayerRemoving.Connect((player) => this.onPlayerLeave(player));
 
 		for (const player of Players.GetPlayers()) {
-			for (const listener of listeners) {
-				task.spawn(() => listener.onPlayerAdd?.(player));
-			}
+			task.spawn(() => this.onPlayerJoin(player));
+		}
+	}
+
+	onStart(): void {
+		Modding.onListenerAdded<OnPlayer>((listener) => this.listeners.add(listener));
+		Modding.onListenerRemoved<OnPlayer>((listener) => this.listeners.delete(listener));
+	}
+
+	onPlayerJoin(player: Player) {
+		for (const listener of this.listeners) {
+			task.spawn(() => listener.onPlayerJoin?.(player));
+		}
+	}
+
+	onPlayerLeave(player: Player) {
+		for (const listener of this.listeners) {
+			task.spawn(() => listener.onPlayerLeave?.(player));
 		}
 	}
 }
