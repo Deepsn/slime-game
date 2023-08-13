@@ -1,6 +1,8 @@
 import { OnInit, Service } from "@flamework/core";
-import { ReplicatedStorage, Workspace } from "@rbxts/services";
+import { HttpService, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { OnPlayer } from "./PlayerJoinService";
+import { producer } from "server/producers";
+import { Slime } from "shared/slices/slimes";
 
 @Service()
 export default class CharacterService implements OnInit, OnPlayer {
@@ -45,6 +47,14 @@ export default class CharacterService implements OnInit, OnPlayer {
 		characterModel.Parent = this.charactersFolder;
 
 		characterMesh.SetNetworkOwner(player);
+
+		const slime = {
+			id: HttpService.GenerateGUID(false),
+			size: 1,
+			instance: characterModel,
+		} satisfies Slime;
+
+		producer.addSlime(slime);
 
 		player.Character = characterModel;
 	}
