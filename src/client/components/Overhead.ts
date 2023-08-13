@@ -10,7 +10,7 @@ import { Players } from "@rbxts/services";
 	},
 })
 export default class Overhead
-	extends BaseComponent<{ owner: number }, ReplicatedStorage["assets"]["overhead"]>
+	extends BaseComponent<{ owner: number }, ReplicatedStorage["assets"]["Overhead"]>
 	implements OnTick
 {
 	private owner = Players.GetPlayerByUserId(this.attributes.owner);

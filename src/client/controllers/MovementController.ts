@@ -6,6 +6,7 @@ import { Logger } from "@rbxts/log";
 @Controller()
 export default class MovementController implements OnInit, OnRender, OnCharacter {
 	private attachment?: Attachment;
+	private otherAttachment?: Attachment;
 	private localPlayer = Players.LocalPlayer;
 	private controls?: Controls;
 	private camera = Workspace.CurrentCamera!;
@@ -25,6 +26,7 @@ export default class MovementController implements OnInit, OnRender, OnCharacter
 			return;
 		}
 
+		const alignOrientation = new Instance("AlignOrientation");
 		const alignPosition = new Instance("AlignPosition");
 		const mainAttachment = new Instance("Attachment");
 		const otherAttachment = new Instance("Attachment");
@@ -39,18 +41,26 @@ export default class MovementController implements OnInit, OnRender, OnCharacter
 		alignPosition.Attachment0 = otherAttachment;
 		alignPosition.Attachment1 = mainAttachment;
 
+		alignOrientation.Attachment0 = otherAttachment;
+		alignOrientation.Attachment1 = mainAttachment;
+
 		alignPosition.ApplyAtCenterOfMass = true;
 		alignPosition.Responsiveness = 20;
 		alignPosition.MaxForce = 2e6;
 
+		alignOrientation.Responsiveness = 20;
+		alignOrientation.MaxTorque = 2e6;
+
 		mainAttachment.Parent = Workspace.Terrain;
 		otherAttachment.Parent = root;
+		alignOrientation.Parent = character;
 		alignPosition.Parent = character;
 
 		this.attachment = mainAttachment;
+		this.otherAttachment = otherAttachment;
 	}
 
-	getLocalDirection() {
+	getMoveDirection() {
 		let moveDirection = this.controls?.GetMoveVector() ?? Vector3.zero;
 
 		if (moveDirection.Magnitude > 0) {
@@ -71,17 +81,23 @@ export default class MovementController implements OnInit, OnRender, OnCharacter
 	}
 
 	onRender(dt: number): void {
-		if (!this.attachment) {
+		if (!this.attachment || !this.otherAttachment) {
 			return;
 		}
 
-		const direction = this.getLocalDirection().mul(16 * dt);
+		const moveDirection = this.getMoveDirection();
+		const direction = moveDirection.mul(16 * dt);
 		const position = this.attachment.WorldPosition.mul(new Vector3(1, 0, 1)).add(Vector3.yAxis.mul(this.height));
 
-		const newPosition = position.add(direction); // 16 is speed
+		const newPosition = position.add(direction);
 
 		this.attachment.WorldPosition = newPosition;
 
-		this.logger.Info("Movement speed {diff}", newPosition.sub(position).Magnitude);
+		if (moveDirection.Magnitude > 0) {
+			const invertedMoveDirection = moveDirection.mul(-1);
+			const angle = math.deg(math.atan2(invertedMoveDirection.X, invertedMoveDirection.Z));
+
+			this.attachment.WorldOrientation = Vector3.yAxis.mul(angle - 90);
+		}
 	}
 }
