@@ -3,11 +3,14 @@
 	"flameworkVersion": "1.0.0-beta.22",
 	"identifiers": {
 		"slime-game:out/client/components/Overhead@Overhead": "client/components/Overhead@Overhead",
+		"slime-game:out/client/controllers/BroadcastStateController@BroadcastStateController": "client/controllers/BroadcastStateController@BroadcastStateController",
 		"slime-game:out/client/controllers/PlayerJoinController@PlayerJoin": "client/controllers/PlayerJoinController@PlayerJoin",
 		"slime-game:out/client/controllers/CharacterAddController@CharacterAdd": "client/controllers/CharacterAddController@CharacterAdd",
 		"slime-game:out/client/controllers/CameraController@CameraController": "client/controllers/CameraController@CameraController",
 		"slime-game:out/client/controllers/MovementController@MovementController": "client/controllers/MovementController@MovementController",
 		"slime-game:out/client/controllers/OverheadController@OverheadController": "client/controllers/OverheadController@OverheadController",
+		"slime-game:out/client/controllers/SlimeSizeController@SlimeSizeController": "client/controllers/SlimeSizeController@SlimeSizeController",
+		"slime-game:out/server/services/BroadcastStateService@BroadcastStateService": "server/services/BroadcastStateService@BroadcastStateService",
 		"slime-game:out/server/services/PlayerJoinService@PlayerJoin": "server/services/PlayerJoinService@PlayerJoin",
 		"slime-game:out/server/services/CharacterAddService@CharacterAdd": "server/services/CharacterAddService@CharacterAdd",
 		"slime-game:out/server/services/CharacterService@CharacterService": "server/services/CharacterService@CharacterService",
@@ -15,7 +18,11 @@
 		"slime-game:out/client/controllers/CharacterAddController@OnCharacter": "client/controllers/CharacterAddController@OnCharacter",
 		"slime-game:out/server/services/PlayerJoinService@OnPlayer": "server/services/PlayerJoinService@OnPlayer",
 		"slime-game:out/server/services/CharacterAddService@OnCharacter": "server/services/CharacterAddService@OnCharacter",
-		"slime-game:out/server/services/BroadcastStateService@BroadcastStateService": "server/services/BroadcastStateService@BroadcastStateService"
+		"slime-game:out/client/controllers/TestController@TestController": "client/controllers/TestController@TestController"
 	},
-	"metadata": {}
+	"metadata": {
+		"config": {
+			"logLevel": "verbose"
+		}
+	}
 }

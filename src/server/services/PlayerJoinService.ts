@@ -1,4 +1,4 @@
-import { OnStart, Modding, Service, OnInit } from "@flamework/core";
+import { Modding, Service, OnInit } from "@flamework/core";
 import { Players } from "@rbxts/services";
 
 export interface OnPlayer {
@@ -6,22 +6,20 @@ export interface OnPlayer {
 	onPlayerLeave?(player: Player): void;
 }
 
-@Service({ loadOrder: 2 })
-class PlayerJoin implements OnInit, OnStart {
+@Service()
+class PlayerJoin implements OnInit {
 	private listeners = new Set<OnPlayer>();
 
 	onInit(): void | Promise<void> {
+		Modding.onListenerAdded<OnPlayer>((listener) => this.listeners.add(listener));
+		Modding.onListenerRemoved<OnPlayer>((listener) => this.listeners.delete(listener));
+
 		Players.PlayerAdded.Connect((player) => this.onPlayerJoin(player));
 		Players.PlayerRemoving.Connect((player) => this.onPlayerLeave(player));
 
 		for (const player of Players.GetPlayers()) {
 			task.spawn(() => this.onPlayerJoin(player));
 		}
-	}
-
-	onStart(): void {
-		Modding.onListenerAdded<OnPlayer>((listener) => this.listeners.add(listener));
-		Modding.onListenerRemoved<OnPlayer>((listener) => this.listeners.delete(listener));
 	}
 
 	onPlayerJoin(player: Player) {

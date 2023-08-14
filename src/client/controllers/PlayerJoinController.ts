@@ -1,35 +1,41 @@
-import { OnStart, Controller, Modding } from "@flamework/core";
+import { Modding, OnInit, Controller } from "@flamework/core";
+import { Logger } from "@rbxts/log";
 import { Players } from "@rbxts/services";
 
 export interface OnPlayer {
-	onPlayerAdd?(player: Player): void;
-	onPlayerRemove?(player: Player): void;
+	onPlayerJoin?(player: Player): void;
+	onPlayerLeave?(player: Player): void;
 }
 
 @Controller()
-class PlayerJoin implements OnStart {
-	onStart(): void {
-		const listeners = new Set<OnPlayer>();
+class PlayerJoin implements OnInit {
+	private listeners = new Set<OnPlayer>();
 
-		Modding.onListenerAdded<OnPlayer>((listener) => listeners.add(listener));
-		Modding.onListenerRemoved<OnPlayer>((listener) => listeners.delete(listener));
+	constructor(private logger: Logger) {}
 
-		Players.PlayerAdded.Connect((player) => {
-			for (const listener of listeners) {
-				task.spawn(() => listener.onPlayerAdd?.(player));
-			}
-		});
+	onInit(): void | Promise<void> {
+		Modding.onListenerAdded<OnPlayer>((listener) => this.listeners.add(listener));
+		Modding.onListenerRemoved<OnPlayer>((listener) => this.listeners.delete(listener));
 
-		Players.PlayerRemoving.Connect((player) => {
-			for (const listener of listeners) {
-				task.spawn(() => listener.onPlayerRemove?.(player));
-			}
-		});
+		Players.PlayerAdded.Connect((player) => this.onPlayerJoin(player));
+		Players.PlayerRemoving.Connect((player) => this.onPlayerLeave(player));
 
 		for (const player of Players.GetPlayers()) {
-			for (const listener of listeners) {
-				task.spawn(() => listener.onPlayerAdd?.(player));
-			}
+			task.spawn(() => this.onPlayerJoin(player));
+		}
+	}
+
+	onPlayerJoin(player: Player) {
+		this.logger.Warn("Player {@player} joined, firing {@listeners} listeners", player, this.listeners.size());
+
+		for (const listener of this.listeners) {
+			task.spawn(() => listener.onPlayerJoin?.(player));
+		}
+	}
+
+	onPlayerLeave(player: Player) {
+		for (const listener of this.listeners) {
+			task.spawn(() => listener.onPlayerLeave?.(player));
 		}
 	}
 }

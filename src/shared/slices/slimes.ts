@@ -7,21 +7,21 @@ export interface Slime {
 }
 
 export interface SlimesState {
-	slimes: Slime[];
+	entities: Slime[];
 }
 
 const initialState: SlimesState = {
-	slimes: [],
+	entities: [],
 };
 
 export const slimesSlice = createProducer(initialState, {
 	addSlime: (state, slime: Slime) => ({
 		...state,
-		slimes: [...state.slimes, slime],
+		entities: [...state.entities, slime],
 	}),
 	setSize: (state, id: string, size: number) => ({
 		...state,
-		slimes: state.slimes.map((slime) => {
+		entities: state.entities.map((slime) => {
 			if (slime.id === id) {
 				slime.size = size;
 			}

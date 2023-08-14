@@ -6,11 +6,9 @@ import { Logger } from "@rbxts/log";
 @Controller()
 export default class MovementController implements OnInit, OnRender, OnCharacter {
 	private attachment?: Attachment;
-	private otherAttachment?: Attachment;
 	private localPlayer = Players.LocalPlayer;
 	private controls?: Controls;
 	private camera = Workspace.CurrentCamera!;
-	private height = 0;
 
 	constructor(private logger: Logger) {}
 
@@ -26,14 +24,11 @@ export default class MovementController implements OnInit, OnRender, OnCharacter
 			return;
 		}
 
-		const alignOrientation = new Instance("AlignOrientation");
-		const alignPosition = new Instance("AlignPosition");
+		const alignPosition = character.WaitForChild("AlignPosition") as AlignPosition;
+		const alignOrientation = character.WaitForChild("AlignOrientation") as AlignOrientation;
 		const mainAttachment = new Instance("Attachment");
 		const otherAttachment = new Instance("Attachment");
 		const root = character.WaitForChild("Root");
-		const mesh = character.WaitForChild("Mesh") as MeshPart;
-
-		this.height = mesh.Size.Y / 2;
 
 		mainAttachment.Name = "MainAttachment";
 		otherAttachment.Name = "OtherAttachment";
@@ -44,20 +39,10 @@ export default class MovementController implements OnInit, OnRender, OnCharacter
 		alignOrientation.Attachment0 = otherAttachment;
 		alignOrientation.Attachment1 = mainAttachment;
 
-		alignPosition.ApplyAtCenterOfMass = true;
-		alignPosition.Responsiveness = 20;
-		alignPosition.MaxForce = 2e6;
-
-		alignOrientation.Responsiveness = 20;
-		alignOrientation.MaxTorque = 2e6;
-
 		mainAttachment.Parent = Workspace.Terrain;
 		otherAttachment.Parent = root;
-		alignOrientation.Parent = character;
-		alignPosition.Parent = character;
 
 		this.attachment = mainAttachment;
-		this.otherAttachment = otherAttachment;
 	}
 
 	getMoveDirection() {
@@ -81,13 +66,23 @@ export default class MovementController implements OnInit, OnRender, OnCharacter
 	}
 
 	onRender(dt: number): void {
-		if (!this.attachment || !this.otherAttachment) {
+		if (!this.attachment) {
 			return;
 		}
 
+		const leaderstats = this.localPlayer.FindFirstChild("leaderstats");
+
+		if (!leaderstats) {
+			return;
+		}
+
+		const size = leaderstats.FindFirstChild("Size") as IntValue | undefined;
+		const height = size?.Value ?? 5;
 		const moveDirection = this.getMoveDirection();
 		const direction = moveDirection.mul(16 * dt);
-		const position = this.attachment.WorldPosition.mul(new Vector3(1, 0, 1)).add(Vector3.yAxis.mul(this.height));
+		const position = this.attachment.WorldPosition.mul(new Vector3(1, 0, 1)).add(
+			Vector3.yAxis.mul((height / 2) * 0.74),
+		);
 
 		const newPosition = position.add(direction);
 
