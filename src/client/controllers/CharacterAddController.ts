@@ -28,13 +28,6 @@ class CharacterAdd implements OnInit, OnPlayer {
 	}
 
 	onCharacterAdd(player: Player, character: Model) {
-		this.logger.Warn(
-			"Player {@player}, character added {@character}, firing to {@listeners} listeners",
-			player,
-			character,
-			this.listeners.size(),
-		);
-
 		for (const listener of this.listeners) {
 			task.spawn(() => listener.onCharacterAdd?.(player, character));
 		}
