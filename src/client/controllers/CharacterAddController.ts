@@ -1,4 +1,4 @@
-import { OnStart, Modding, Controller, OnInit } from "@flamework/core";
+import { Modding, Controller, OnInit } from "@flamework/core";
 import { OnPlayer } from "./PlayerJoinController";
 import { Logger } from "@rbxts/log";
 
