@@ -5,6 +5,7 @@ import { producer } from "server/producers";
 @Service()
 export class TestService implements OnPlayer {
 	onPlayerJoin(player: Player): void {
-		producer.changeSlimeStat(tostring(player.UserId), "size", 10);
+		producer.changeSlimeStat(tostring(player.UserId), "size", 2);
+		task.delay(2, () => this.onPlayerJoin(player));
 	}
 }

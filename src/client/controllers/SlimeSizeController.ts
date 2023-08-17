@@ -12,7 +12,6 @@ export default class SlimeSizeController implements OnCharacter {
 	private tweenInfo = new TweenInfo(0.2, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out, 0, false, 0);
 
 	onCharacterAdd(player: Player, character: Model): void {
-		// const leaderstats = player.WaitForChild("leaderstats") as Leaderstats;
 		const characterMesh = character.WaitForChild("Mesh") as MeshPart;
 
 		const update = (size: number) => {
@@ -26,15 +25,11 @@ export default class SlimeSizeController implements OnCharacter {
 
 		const unsubscribe = producer.subscribe(selectPlayerSlime(tostring(player.UserId)), (data) => {
 			if (data) {
-				print("update");
 				update(data.size);
 			}
 		});
 
 		this.janitor.Add(unsubscribe);
-
-		// leaderstats.Size.GetPropertyChangedSignal("Value").Connect(update);
-		// update();
 	}
 
 	onCharacterRemove(player: Player, oldCharacter: Model): void {

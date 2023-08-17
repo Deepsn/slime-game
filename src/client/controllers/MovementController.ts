@@ -2,6 +2,7 @@ import { Controller, OnRender, OnInit } from "@flamework/core";
 import { OnCharacter } from "./CharacterAddController";
 import { Players, Workspace } from "@rbxts/services";
 import { Logger } from "@rbxts/log";
+import SlimeSizeController from "./SlimeSizeController";
 
 @Controller()
 export default class MovementController implements OnInit, OnRender, OnCharacter {
@@ -10,7 +11,10 @@ export default class MovementController implements OnInit, OnRender, OnCharacter
 	private controls?: Controls;
 	private camera = Workspace.CurrentCamera!;
 
-	constructor(private logger: Logger) {}
+	constructor(
+		private logger: Logger,
+		private readonly slimeSizeController: SlimeSizeController,
+	) {}
 
 	onInit(): void | Promise<void> {
 		const playerScripts = this.localPlayer.WaitForChild("PlayerScripts") as Folder;
@@ -76,8 +80,7 @@ export default class MovementController implements OnInit, OnRender, OnCharacter
 			return;
 		}
 
-		const size = leaderstats.FindFirstChild("Size") as IntValue | undefined;
-		const height = size?.Value ?? 5;
+		const height = this.slimeSizeController.size;
 		const moveDirection = this.getMoveDirection();
 		const direction = moveDirection.mul(16 * dt);
 		const position = this.attachment.WorldPosition.mul(new Vector3(1, 0, 1)).add(

@@ -1,11 +1,11 @@
-import { OnInit, Service } from "@flamework/core";
+import { OnStart, Service } from "@flamework/core";
 import { createBroadcaster } from "@rbxts/reflex";
 import { producer } from "server/producers";
 import Remotes from "shared/remotes";
 import { slices } from "shared/slices";
 
 @Service()
-export default class BroadcastStateService implements OnInit {
+export default class BroadcastStateService implements OnStart {
 	private broadcaster = createBroadcaster({
 		producers: slices,
 		dispatch: (player, actions) => {
@@ -13,7 +13,7 @@ export default class BroadcastStateService implements OnInit {
 		},
 	});
 
-	onInit(): void | Promise<void> {
+	onStart(): void | Promise<void> {
 		Remotes.Server.Get("start").Connect((player) => {
 			this.broadcaster.start(player);
 		});

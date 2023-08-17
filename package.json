@@ -30,6 +30,7 @@
 		"@rbxts/lapis": "^0.2.4",
 		"@rbxts/log": "^0.6.3",
 		"@rbxts/net": "^3.0.7",
+		"@rbxts/profileservice": "^1.4.1",
 		"@rbxts/reflex": "^4.2.0",
 		"@rbxts/services": "^1.5.1",
 		"@rbxts/t": "^3.1.0"
