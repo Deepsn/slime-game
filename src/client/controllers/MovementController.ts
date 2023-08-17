@@ -74,12 +74,6 @@ export default class MovementController implements OnInit, OnRender, OnCharacter
 			return;
 		}
 
-		const leaderstats = this.localPlayer.FindFirstChild("leaderstats");
-
-		if (!leaderstats) {
-			return;
-		}
-
 		const height = this.slimeSizeController.size;
 		const moveDirection = this.getMoveDirection();
 		const direction = moveDirection.mul(16 * dt);
