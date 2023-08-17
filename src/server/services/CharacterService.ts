@@ -12,7 +12,6 @@ export default class CharacterService implements OnInit, OnPlayer {
 	}
 
 	onPlayerJoin(player: Player): void {
-		print("player added");
 		const characterModel = new Instance("Model");
 		const characterMesh = ReplicatedStorage.assets.PlayerMesh.Clone();
 
