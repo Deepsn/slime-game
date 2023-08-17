@@ -26,6 +26,8 @@
 	"dependencies": {
 		"@flamework/components": "^1.0.0-beta.22",
 		"@flamework/core": "^1.0.0-beta.23",
+		"@rbxts/janitor": "^1.15.4-ts.0",
+		"@rbxts/lapis": "^0.2.4",
 		"@rbxts/log": "^0.6.3",
 		"@rbxts/net": "^3.0.7",
 		"@rbxts/reflex": "^4.2.0",
