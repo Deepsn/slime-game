@@ -8,11 +8,9 @@
 		"project": "./tsconfig.json"
 	},
 	"ignorePatterns": ["/out"],
-	"plugins": ["@typescript-eslint", "roblox-ts"],
-	"extends": [
-		"eslint:recommended",
-		"plugin:@typescript-eslint/recommended",
-		"plugin:roblox-ts/recommended",
-		"prettier"
-	]
+	"plugins": ["@typescript-eslint", "roblox-ts", "prettier"],
+	"extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:roblox-ts/recommended"],
+	"rules": {
+		"no-mixed-spaces-and-tabs": [2, "smart-tabs"]
+	}
 }
