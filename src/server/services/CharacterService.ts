@@ -1,14 +1,13 @@
-import { OnInit, Service } from "@flamework/core";
+import { OnStart, Service } from "@flamework/core";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { OnPlayer } from "./PlayerJoinService";
 
 @Service()
-export default class CharacterService implements OnInit, OnPlayer {
-	private charactersFolder = new Instance("Folder");
+export default class CharacterService implements OnStart, OnPlayer {
+	private charactersFolder = new Instance("Folder", Workspace);
 
-	onInit(): void | Promise<void> {
+	onStart(): void | Promise<void> {
 		this.charactersFolder.Name = "Characters";
-		this.charactersFolder.Parent = Workspace;
 	}
 
 	onPlayerJoin(player: Player): void {
@@ -58,15 +57,6 @@ export default class CharacterService implements OnInit, OnPlayer {
 		characterModel.Parent = this.charactersFolder;
 
 		characterMesh.SetNetworkOwner(player);
-
-		// const slime = {
-		// 	id: HttpService.GenerateGUID(false),
-		// 	size: 1,
-		// 	instance: characterModel,
-		// } satisfies Slime;
-
-		// producer.addSlime(slime);
-
 		player.Character = characterModel;
 	}
 }

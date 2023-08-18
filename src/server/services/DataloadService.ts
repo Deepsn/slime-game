@@ -29,7 +29,7 @@ export class DataLoadService implements OnStart, OnPlayer {
 		}
 
 		const start_time = os.clock();
-		const profile = this.profileStore?.LoadProfileAsync(`Player_${player.UserId}`);
+		const profile = this.profileStore.LoadProfileAsync(`Player_${player.UserId}`, "ForceLoad");
 		const delta_time = os.clock() - start_time;
 		const rounded_time = math.round(delta_time * 100) / 100;
 
