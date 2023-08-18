@@ -23,7 +23,7 @@ export default class SlimeSizeController implements OnCharacter {
 			tween.Play();
 		};
 
-		const unsubscribe = producer.subscribe(selectPlayerSlime(tostring(player.UserId)), (data) => {
+		const unsubscribe = producer.subscribe(selectPlayerSlime(player.UserId), (data) => {
 			if (data) {
 				update(data.size);
 			}

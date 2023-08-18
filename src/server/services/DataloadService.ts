@@ -36,12 +36,11 @@ export class DataLoadService implements OnStart, OnPlayer {
 		this.logger.Info("{player}'s profile loaded in {time}s", player.Name, rounded_time);
 
 		if (profile !== undefined) {
-			const playerKey = tostring(player.UserId);
 			const janitor = new Janitor();
 
 			this.logger.Debug("{player} data: {@data}", player.Name, profile.Data);
 
-			const unsubscribe = producer.subscribe(selectPlayerData(playerKey), (data) => {
+			const unsubscribe = producer.subscribe(selectPlayerData(player.UserId), (data) => {
 				if (data) {
 					profile.Data = data;
 				}
@@ -49,7 +48,7 @@ export class DataLoadService implements OnStart, OnPlayer {
 
 			janitor.Add(unsubscribe);
 
-			producer.loadPlayerData(playerKey, profile.Data);
+			producer.loadPlayerData(player.UserId, profile.Data);
 
 			this.profiles.set(player, [janitor, profile]);
 		} else {
