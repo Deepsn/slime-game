@@ -70,6 +70,6 @@ export class CrystalsSpawnerService implements OnStart, OnTick {
 			value: this.getValueFromCrystal(randomCrystal, areaId),
 		};
 
-		producer.addCrystal(tostring(areaId), crystal);
+		producer.addCrystal(`Area${areaId}`, crystal);
 	}
 }

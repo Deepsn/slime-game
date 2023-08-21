@@ -12,15 +12,15 @@ export interface CrystalsState {
 const initialState: CrystalsState = {};
 
 export const crystalsSlice = createProducer(initialState, {
-	addCrystal: (state, areaId: string, crystal: Collectable) => ({
+	addCrystal: (state, areaId: `Area${number}`, crystal: Collectable) => ({
 		...state,
 		[areaId]: {
 			...state[areaId],
-			[crystal.id]: { ...crystal, type: "Crystal" },
+			[crystal.id]: crystal,
 		},
 	}),
 
-	removeCrystal: (state, areaId: string, crystalId: string) => ({
+	removeCrystal: (state, areaId: `Area${number}`, crystalId: string) => ({
 		...state,
 		[areaId]: {
 			...state[areaId],

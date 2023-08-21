@@ -2,6 +2,7 @@ import { Controller, OnStart } from "@flamework/core";
 import { Logger } from "@rbxts/log";
 import { createSelector } from "@rbxts/reflex";
 import { Players, ReplicatedStorage, Workspace } from "@rbxts/services";
+import { t } from "@rbxts/t";
 import { RootState, producer } from "client/producers";
 import { selectPlayerWorlds } from "shared/selectors";
 
@@ -22,19 +23,15 @@ export class CrystalsController implements OnStart {
 			return state.collectables.crystals;
 		};
 
-		const selectWorlds = (state: RootState) => {
-			return state.players.worlds;
-		};
-
 		const selectCurrentWorld = (userId: string) => {
 			return createSelector(selectPlayerWorlds(userId), (worlds) => {
 				return worlds?.selected;
 			});
 		};
 
-		const selectCrystalsInArea = (area: string) => {
+		const selectCrystalsInArea = (areaId: string) => {
 			return createSelector(selectCrystals, (crystals) => {
-				return crystals[area];
+				return crystals[areaId];
 			});
 		};
 
@@ -49,9 +46,21 @@ export class CrystalsController implements OnStart {
 					| MeshPart
 					| undefined;
 
-				this.logger.Info("Creating crystal: {crystal}", crystal);
+				const removeCollider = (instance: BasePart | Model) => {
+					if (t.instanceIsA("Model")(instance)) {
+						instance.GetChildren().forEach((object) => {
+							if (t.union(t.instanceIsA("Model"), t.instanceIsA("BasePart"))(object)) {
+								removeCollider(object);
+							}
+						});
+					} else {
+						instance.CanCollide = false;
+						instance.CanTouch = false;
+					}
+				};
 
 				if (crystalInstance) {
+					removeCollider(crystalInstance);
 					crystalInstance.SetAttribute("Id", crystal.id);
 					crystalInstance.PivotTo(new CFrame(crystal.position));
 					crystalInstance.Parent = this.crystalsContainer;
