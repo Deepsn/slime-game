@@ -4,20 +4,23 @@ import { producer } from "server/producers";
 import Remotes from "shared/remotes";
 import { slices } from "shared/slices";
 
-@Service()
+@Service({ loadOrder: 5 })
 export default class BroadcastStateService implements OnStart {
-	private broadcaster = createBroadcaster({
-		producers: slices,
-		dispatch: (player, actions) => {
-			Remotes.Server.Get("dispatch").SendToPlayer(player, actions);
-		},
-	});
-
 	onStart(): void | Promise<void> {
-		Remotes.Server.Get("start").Connect((player) => {
-			this.broadcaster.start(player);
+		const dispatchRemote = Remotes.Server.Get("dispatch");
+		const startRemote = Remotes.Server.Get("start");
+
+		const broadcaster = createBroadcaster({
+			producers: slices,
+			dispatch: (player, actions) => {
+				dispatchRemote.SendToPlayer(player, actions);
+			},
 		});
 
-		producer.applyMiddleware(this.broadcaster.middleware);
+		startRemote.Connect((player) => {
+			broadcaster.start(player);
+		});
+
+		producer.applyMiddleware(broadcaster.middleware);
 	}
 }

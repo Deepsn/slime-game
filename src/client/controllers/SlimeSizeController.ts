@@ -1,38 +1,92 @@
-import { Controller } from "@flamework/core";
+import { Controller, OnStart } from "@flamework/core";
 import { OnCharacter } from "./CharacterAddController";
-import { TweenService } from "@rbxts/services";
-import { producer } from "client/producers";
+import { Players, TweenService } from "@rbxts/services";
+import { RootState, producer } from "client/producers";
 import { selectPlayerSlime } from "shared/selectors";
 import { Janitor } from "@rbxts/janitor";
 
 @Controller()
-export default class SlimeSizeController implements OnCharacter {
+export default class SlimeSizeController implements OnStart {
 	public size = 0;
-	private janitor = new Janitor();
+	private janitors = new Map<Player, Janitor>();
 	private tweenInfo = new TweenInfo(0.2, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out, 0, false, 0);
 
-	onCharacterAdd(player: Player, character: Model): void {
-		const characterMesh = character.WaitForChild("Mesh") as MeshPart;
-
-		const update = (size: number) => {
-			this.size = size;
-
-			const goalSize = Vector3.one.mul(new Vector3(1, 0.74, 1)).mul(size);
-			const tween = TweenService.Create(characterMesh, this.tweenInfo, { Size: goalSize });
-
-			tween.Play();
+	onStart(): void {
+		const selectSlimes = (state: RootState) => {
+			return state.players.slime;
 		};
 
-		const unsubscribe = producer.subscribe(selectPlayerSlime(player.UserId), (data) => {
-			if (data) {
-				update(data.size);
+		producer.observe(selectSlimes, (slime, id) => {
+			const player = Players.GetPlayerByUserId(id);
+			const janitor = new Janitor();
+
+			if (!player) {
+				return;
 			}
+
+			const onCharacterAdd = (character: Model) => {
+				const characterMesh = character.WaitForChild("Mesh") as MeshPart;
+
+				const update = (size: number) => {
+					this.size = size;
+
+					const goalSize = Vector3.one.mul(new Vector3(1, 0.74, 1)).mul(size);
+					const tween = TweenService.Create(characterMesh, this.tweenInfo, { Size: goalSize });
+
+					tween.Play();
+				};
+
+				const selectPlayerSlime = (state: RootState) => {
+					return state.players.slime[id];
+				};
+
+				janitor.Add(
+					producer.subscribe(selectPlayerSlime, (slime) => {
+						if (slime) {
+							update(slime.size);
+						}
+					}),
+				);
+				update(slime.size);
+			};
+
+			janitor.Add(player.CharacterAdded.Connect((character) => onCharacterAdd(character)));
+			if (player.Character) {
+				onCharacterAdd(player.Character);
+			}
+
+			return () => {
+				janitor.Destroy();
+			};
 		});
-
-		this.janitor.Add(unsubscribe);
 	}
 
-	onCharacterRemove(player: Player, oldCharacter: Model): void {
-		this.janitor.Cleanup();
-	}
+	// onCharacterAdd(player: Player, character: Model): void {
+	// 	print("character added");
+	// 	const characterMesh = character.WaitForChild("Mesh") as MeshPart;
+
+	// 	const update = (size: number) => {
+	// 		this.size = size;
+
+	// 		const goalSize = Vector3.one.mul(new Vector3(1, 0.74, 1)).mul(size);
+	// 		const tween = TweenService.Create(characterMesh, this.tweenInfo, { Size: goalSize });
+
+	// 		tween.Play();
+	// 	};
+
+	// 	const selectPlayerSlime = (id: number) => {
+	// 		return (state: RootState) => {
+	// 			return state.players.slime[id];
+	// 		};
+	// 	};
+
+	// 	producer.subscribe(selectPlayerSlime(player.UserId), (slime) => {
+	// 		print("player slime", slime);
+	// 	});
+
+	// 	// janitor.Add(unsubscribe);
+	// 	janitor.Add(() => print("character removed"));
+
+	// 	this.janitors.set(player, janitor);
+	// }
 }

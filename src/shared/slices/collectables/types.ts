@@ -1,9 +1,7 @@
-export interface CrystalEntity extends MeshPart {
-	PointLight: PointLight;
-}
-
-export interface Crystal {
+export interface Collectable {
+	type?: "Coin" | "Crystal";
 	id: string;
-	points: number;
-	entity: CrystalEntity;
+	value: number;
+	color: string;
+	position: Vector3;
 }

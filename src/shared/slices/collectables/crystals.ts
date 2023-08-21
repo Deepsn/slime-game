@@ -1,20 +1,30 @@
 import { createProducer } from "@rbxts/reflex";
-import { Crystal } from "./types";
+import { Collectable } from "./types";
 
 export interface CrystalsState {
-	readonly [crystalId: string]: Crystal | undefined;
+	readonly [areaId: string]:
+		| {
+				readonly [crystalId: string]: Collectable | undefined;
+		  }
+		| undefined;
 }
 
 const initialState: CrystalsState = {};
 
 export const crystalsSlice = createProducer(initialState, {
-	addCrystal: (state, crystal: Crystal) => ({
+	addCrystal: (state, areaId: string, crystal: Collectable) => ({
 		...state,
-		[crystal.id]: crystal,
+		[areaId]: {
+			...state[areaId],
+			[crystal.id]: { ...crystal, type: "Crystal" },
+		},
 	}),
 
-	removeCrystal: (state, crystalId: string) => ({
+	removeCrystal: (state, areaId: string, crystalId: string) => ({
 		...state,
-		[crystalId]: undefined,
+		[areaId]: {
+			...state[areaId],
+			[crystalId]: undefined,
+		},
 	}),
 });

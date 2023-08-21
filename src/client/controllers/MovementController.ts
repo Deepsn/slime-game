@@ -1,11 +1,15 @@
-import { Controller, OnRender, OnInit } from "@flamework/core";
+import { Controller, OnRender, OnStart } from "@flamework/core";
 import { OnCharacter } from "./CharacterAddController";
 import { Players, Workspace } from "@rbxts/services";
 import { Logger } from "@rbxts/log";
 import SlimeSizeController from "./SlimeSizeController";
 
+interface Controls {
+	GetMoveVector(): Vector3;
+}
+
 @Controller()
-export default class MovementController implements OnInit, OnRender, OnCharacter {
+export default class MovementController implements OnStart, OnRender, OnCharacter {
 	private attachment?: Attachment;
 	private localPlayer = Players.LocalPlayer;
 	private controls?: Controls;
@@ -16,11 +20,13 @@ export default class MovementController implements OnInit, OnRender, OnCharacter
 		private readonly slimeSizeController: SlimeSizeController,
 	) {}
 
-	onInit(): void | Promise<void> {
+	onStart(): void | Promise<void> {
 		const playerScripts = this.localPlayer.WaitForChild("PlayerScripts") as Folder;
-		const playerModule = require(playerScripts.WaitForChild("PlayerModule") as ModuleScript) as PlayerModule;
-
-		this.controls = playerModule.GetControls();
+		const playerModule = require(playerScripts.WaitForChild("PlayerModule") as ModuleScript) as {
+			GetControls(): Controls;
+		};
+		const controlModule = playerModule.GetControls();
+		this.controls = controlModule;
 	}
 
 	onCharacterAdd(player: Player, character: Model): void {

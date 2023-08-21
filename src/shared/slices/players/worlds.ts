@@ -48,7 +48,7 @@ export const worldsSlice = createProducer(initialState, {
 		};
 	},
 
-	setSelectedWorld: (state, player: number, worldName: string) => {
+	setSelectedWorld: (state, player: number, worldName: `Area${number}`) => {
 		const worlds = state[player];
 		const hasWorld = worlds?.unlocked.includes(worldName);
 

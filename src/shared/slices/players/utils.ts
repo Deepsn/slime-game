@@ -7,7 +7,7 @@ export const defaultPlayerData: PlayerData = {
 	},
 	worlds: {
 		unlocked: [],
-		selected: "",
+		selected: "Area1",
 	},
 	balance: {
 		coins: 0,

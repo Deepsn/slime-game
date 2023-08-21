@@ -1,5 +1,5 @@
 import { createProducer } from "@rbxts/reflex";
-import { PlayerBalance, PlayerData, PlayerSlime } from "./types";
+import { PlayerData, PlayerSlime } from "./types";
 
 export interface SlimeState {
 	readonly [player: number]: PlayerSlime | undefined;
