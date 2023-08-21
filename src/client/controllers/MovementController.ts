@@ -6,10 +6,12 @@ import SlimeSizeController from "./SlimeSizeController";
 import { InputController } from "./InputController";
 
 @Controller()
-export default class MovementController implements OnStart, OnRender, OnCharacter {
-	private attachment?: Attachment;
+export default class MovementController implements OnRender, OnStart, OnCharacter {
+	private alignOrientation?: AlignOrientation;
+	private linearVelocity?: LinearVelocity;
 	private localPlayer = Players.LocalPlayer;
 	private camera = Workspace.CurrentCamera!;
+	private raycastParams = new RaycastParams();
 
 	constructor(
 		private logger: Logger,
@@ -17,13 +19,9 @@ export default class MovementController implements OnStart, OnRender, OnCharacte
 		private readonly inputController: InputController,
 	) {}
 
-	onStart(): void | Promise<void> {
-		// const playerScripts = this.localPlayer.WaitForChild("PlayerScripts") as Folder;
-		// const playerModule = require(playerScripts.WaitForChild("PlayerModule") as ModuleScript) as {
-		// 	GetControls(): Controls;
-		// };
-		// const controlModule = playerModule.GetControls();
-		// this.controls = controlModule;
+	onStart(): void {
+		const characterFolder = Workspace.WaitForChild("Characters") as Folder;
+		this.raycastParams.FilterDescendantsInstances = [characterFolder];
 	}
 
 	onCharacterAdd(player: Player, character: Model): void {
@@ -31,8 +29,9 @@ export default class MovementController implements OnStart, OnRender, OnCharacte
 			return;
 		}
 
-		const alignPosition = character.WaitForChild("AlignPosition") as AlignPosition;
+		const linearVelocity = character.WaitForChild("LinearVelocity") as LinearVelocity;
 		const alignOrientation = character.WaitForChild("AlignOrientation") as AlignOrientation;
+		const planeConstraint = new Instance("PlaneConstraint");
 		const mainAttachment = new Instance("Attachment");
 		const otherAttachment = new Instance("Attachment");
 		const root = character.WaitForChild("Root");
@@ -40,16 +39,17 @@ export default class MovementController implements OnStart, OnRender, OnCharacte
 		mainAttachment.Name = "MainAttachment";
 		otherAttachment.Name = "OtherAttachment";
 
-		alignPosition.Attachment0 = otherAttachment;
-		alignPosition.Attachment1 = mainAttachment;
+		linearVelocity.Attachment0 = mainAttachment;
+		alignOrientation.Attachment0 = mainAttachment;
 
-		alignOrientation.Attachment0 = otherAttachment;
-		alignOrientation.Attachment1 = mainAttachment;
+		planeConstraint.Attachment0 = mainAttachment;
+		planeConstraint.Attachment1 = otherAttachment;
 
-		mainAttachment.Parent = Workspace.Terrain;
+		mainAttachment.Parent = root;
 		otherAttachment.Parent = root;
 
-		this.attachment = mainAttachment;
+		this.alignOrientation = alignOrientation;
+		this.linearVelocity = linearVelocity;
 	}
 
 	getMoveDirection() {
@@ -73,26 +73,37 @@ export default class MovementController implements OnStart, OnRender, OnCharacte
 	}
 
 	onRender(dt: number): void {
-		if (!this.attachment) {
+		if (!this.linearVelocity || !this.alignOrientation) {
 			return;
 		}
 
 		const height = this.slimeSizeController.size;
 		const moveDirection = this.getMoveDirection();
-		const direction = moveDirection.mul(16 * dt);
-		const position = this.attachment.WorldPosition.mul(new Vector3(1, 0, 1)).add(
-			Vector3.yAxis.mul((height / 2) * 0.74),
-		);
+		const direction = moveDirection.mul(16 * dt * 60);
+		const origin = this.camera.Focus.Position;
 
-		const newPosition = position.add(direction);
+		this.linearVelocity.VectorVelocity = direction;
 
-		this.attachment.WorldPosition = newPosition;
+		const result = Workspace.Raycast(origin, Vector3.yAxis.mul(-1), this.raycastParams);
+
+		if (!result) {
+			this.linearVelocity.VectorVelocity = new Vector3(direction.X, -1, direction.Z);
+		}
+
+		// const position = this.attachment.WorldPosition.mul(new Vector3(1, 0, 1)).add(
+		// 	Vector3.yAxis.mul((height / 2) * 0.74),
+		// );
+
+		// const newPosition = position.add(direction);
+
+		// this.attachment.WorldPosition = newPosition;
 
 		if (moveDirection.Magnitude > 0) {
 			const invertedMoveDirection = moveDirection.mul(-1);
 			const angle = math.deg(math.atan2(invertedMoveDirection.X, invertedMoveDirection.Z));
 
-			this.attachment.WorldOrientation = Vector3.yAxis.mul(angle - 90);
+			this.alignOrientation.CFrame = new CFrame(origin, origin.add(direction.Cross(Vector3.yAxis)));
+			// 	this.attachment.WorldOrientation = Vector3.yAxis.mul(angle - 90);
 		}
 	}
 }
