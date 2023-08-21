@@ -2,23 +2,23 @@ import { createProducer } from "@rbxts/reflex";
 import { PlayerBalance, PlayerData } from "./types";
 
 export interface BalanceState {
-	readonly [player: number]: PlayerBalance | undefined;
+	readonly [player: string]: PlayerBalance | undefined;
 }
 
 const initialState: BalanceState = {};
 
 export const balanceSlice = createProducer(initialState, {
-	loadPlayerData: (state, player: number, data: PlayerData) => ({
+	loadPlayerData: (state, player: string, data: PlayerData) => ({
 		...state,
 		[player]: data.balance,
 	}),
 
-	closePlayerData: (state, player: number) => ({
+	closePlayerData: (state, player: string) => ({
 		...state,
 		[player]: undefined,
 	}),
 
-	changeBalance: (state, player: number, balanceType: keyof PlayerBalance, amount: number) => {
+	changeBalance: (state, player: string, balanceType: keyof PlayerBalance, amount: number) => {
 		const balance = state[player];
 
 		return {

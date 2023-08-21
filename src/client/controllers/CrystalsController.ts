@@ -3,13 +3,14 @@ import { Logger } from "@rbxts/log";
 import { createSelector } from "@rbxts/reflex";
 import { Players, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { RootState, producer } from "client/producers";
+import { selectPlayerWorlds } from "shared/selectors";
 
 @Controller()
 export class CrystalsController implements OnStart {
 	private crystalsFolder = ReplicatedStorage.Crystals;
 	private crystalsContainer = new Instance("Folder");
 
-	// constructor(private logger: Logger) {}
+	constructor(private logger: Logger) {}
 
 	onStart() {
 		const localPlayer = Players.LocalPlayer;
@@ -21,8 +22,14 @@ export class CrystalsController implements OnStart {
 			return state.collectables.crystals;
 		};
 
-		const selectPlayerWorld = (state: RootState) => {
-			return state.players.worlds[localPlayer.UserId];
+		const selectWorlds = (state: RootState) => {
+			return state.players.worlds;
+		};
+
+		const selectCurrentWorld = (userId: string) => {
+			return createSelector(selectPlayerWorlds(userId), (worlds) => {
+				return worlds?.selected;
+			});
 		};
 
 		const selectCrystalsInArea = (area: string) => {
@@ -31,20 +38,18 @@ export class CrystalsController implements OnStart {
 			});
 		};
 
-		producer.subscribe(selectPlayerWorld, (world) => {
-			print("Player area: {area}", world);
-
-			if (world === undefined) {
+		producer.subscribe(selectCurrentWorld(tostring(localPlayer.UserId)), (area) => {
+			if (area === undefined) {
 				return;
 			}
 
-			const unsubscribe = producer.observe(selectCrystalsInArea(world.selected), (crystal) => {
+			const unobserve = producer.observe(selectCrystalsInArea(area), (crystal) => {
 				const crystalInstance = this.crystalsFolder.FindFirstChild(crystal.color)?.Clone() as
 					| Model
 					| MeshPart
 					| undefined;
 
-				print("Creating crystal: {crystal}", crystal);
+				this.logger.Info("Creating crystal: {crystal}", crystal);
 
 				if (crystalInstance) {
 					crystalInstance.SetAttribute("Id", crystal.id);
@@ -57,7 +62,7 @@ export class CrystalsController implements OnStart {
 				};
 			});
 
-			return unsubscribe;
+			return unobserve;
 		});
 	}
 }

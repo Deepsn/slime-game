@@ -20,7 +20,7 @@ task.wait(0.5);
 
 const setSizeFunction = new ZirconFunctionBuilder("add_slime_size").AddArgument("number").Bind((context, size) => {
 	const executor = context.GetExecutor();
-	producer.changeSlimeStat(executor.UserId, "size", size);
+	producer.changeSlimeStat(tostring(executor.UserId), "size", size);
 });
 
 // TODO: change ZirconGroup.User -> ZirconGroup.Admin

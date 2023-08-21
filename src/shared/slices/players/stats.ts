@@ -2,23 +2,23 @@ import { createProducer } from "@rbxts/reflex";
 import { PlayerData, PlayerStats } from "./types";
 
 export interface StatsState {
-	readonly [player: number]: PlayerStats | undefined;
+	readonly [player: string]: PlayerStats | undefined;
 }
 
 const initialState: StatsState = {};
 
 export const statsSlice = createProducer(initialState, {
-	loadPlayerData: (state, player: number, data: PlayerData) => ({
+	loadPlayerData: (state, player: string, data: PlayerData) => ({
 		...state,
 		[player]: data.stats,
 	}),
 
-	closePlayerData: (state, player: number) => ({
+	closePlayerData: (state, player: string) => ({
 		...state,
 		[player]: undefined,
 	}),
 
-	changeStats: (state, player: number, statType: keyof PlayerStats, newStat: number) => {
+	changeStats: (state, player: string, statType: keyof PlayerStats, newStat: number) => {
 		const stats = state[player];
 
 		return {

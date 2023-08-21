@@ -2,23 +2,23 @@ import { createProducer } from "@rbxts/reflex";
 import { PlayerData, PlayerWorlds } from "./types";
 
 export interface WorldsState {
-	readonly [player: number]: PlayerWorlds | undefined;
+	readonly [player: string]: PlayerWorlds | undefined;
 }
 
 const initialState: WorldsState = {};
 
 export const worldsSlice = createProducer(initialState, {
-	loadPlayerData: (state, player: number, data: PlayerData) => ({
+	loadPlayerData: (state, player: string, data: PlayerData) => ({
 		...state,
 		[player]: data.worlds,
 	}),
 
-	closePlayerData: (state, player: number) => ({
+	closePlayerData: (state, player: string) => ({
 		...state,
 		[player]: undefined,
 	}),
 
-	addWorld: (state, player: number, world: string) => {
+	addWorld: (state, player: string, world: string) => {
 		const worlds = state[player];
 
 		return {
@@ -33,7 +33,7 @@ export const worldsSlice = createProducer(initialState, {
 		};
 	},
 
-	removeWorld: (state, player: number, worldName: string) => {
+	removeWorld: (state, player: string, worldName: string) => {
 		const worlds = state[player];
 
 		return {
@@ -48,7 +48,7 @@ export const worldsSlice = createProducer(initialState, {
 		};
 	},
 
-	setSelectedWorld: (state, player: number, worldName: `Area${number}`) => {
+	setSelectedWorld: (state, player: string, worldName: `Area${number}`) => {
 		const worlds = state[player];
 		const hasWorld = worlds?.unlocked.includes(worldName);
 

@@ -40,7 +40,7 @@ export class DataLoadService implements OnStart, OnPlayer {
 
 			this.logger.Debug("{player} data: {@data}", player.Name, profile.Data);
 
-			const unsubscribe = producer.subscribe(selectPlayerData(player.UserId), (data) => {
+			const unsubscribe = producer.subscribe(selectPlayerData(tostring(player.UserId)), (data) => {
 				if (data) {
 					profile.Data = data;
 				}
@@ -48,7 +48,7 @@ export class DataLoadService implements OnStart, OnPlayer {
 
 			janitor.Add(unsubscribe);
 
-			producer.loadPlayerData(player.UserId, profile.Data);
+			producer.loadPlayerData(tostring(player.UserId), profile.Data);
 
 			this.profiles.set(player, [janitor, profile]);
 		} else {
