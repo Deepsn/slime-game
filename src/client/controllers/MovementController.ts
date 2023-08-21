@@ -3,30 +3,27 @@ import { OnCharacter } from "./CharacterAddController";
 import { Players, Workspace } from "@rbxts/services";
 import { Logger } from "@rbxts/log";
 import SlimeSizeController from "./SlimeSizeController";
-
-interface Controls {
-	GetMoveVector(): Vector3;
-}
+import { InputController } from "./InputController";
 
 @Controller()
 export default class MovementController implements OnStart, OnRender, OnCharacter {
 	private attachment?: Attachment;
 	private localPlayer = Players.LocalPlayer;
-	private controls?: Controls;
 	private camera = Workspace.CurrentCamera!;
 
 	constructor(
 		private logger: Logger,
 		private readonly slimeSizeController: SlimeSizeController,
+		private readonly inputController: InputController,
 	) {}
 
 	onStart(): void | Promise<void> {
-		const playerScripts = this.localPlayer.WaitForChild("PlayerScripts") as Folder;
-		const playerModule = require(playerScripts.WaitForChild("PlayerModule") as ModuleScript) as {
-			GetControls(): Controls;
-		};
-		const controlModule = playerModule.GetControls();
-		this.controls = controlModule;
+		// const playerScripts = this.localPlayer.WaitForChild("PlayerScripts") as Folder;
+		// const playerModule = require(playerScripts.WaitForChild("PlayerModule") as ModuleScript) as {
+		// 	GetControls(): Controls;
+		// };
+		// const controlModule = playerModule.GetControls();
+		// this.controls = controlModule;
 	}
 
 	onCharacterAdd(player: Player, character: Model): void {
@@ -56,7 +53,7 @@ export default class MovementController implements OnStart, OnRender, OnCharacte
 	}
 
 	getMoveDirection() {
-		let moveDirection = this.controls?.GetMoveVector() ?? Vector3.zero;
+		let moveDirection = this.inputController.moveDirection;
 
 		if (moveDirection.Magnitude > 0) {
 			moveDirection = moveDirection.Unit;
@@ -69,9 +66,9 @@ export default class MovementController implements OnStart, OnRender, OnCharacte
 		const cameraSin = math.sin(cameraYaw);
 
 		return new Vector3(
-			-moveDirection.X * cameraCos + -moveDirection.Z * cameraSin,
+			-moveDirection.X * cameraCos + moveDirection.Z * cameraSin,
 			0,
-			-moveDirection.Z * cameraCos - -moveDirection.X * cameraSin,
+			moveDirection.Z * cameraCos - -moveDirection.X * cameraSin,
 		);
 	}
 
