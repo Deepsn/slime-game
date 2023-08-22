@@ -17,6 +17,7 @@ export interface PlayerStats {
 	level: number;
 	experience: number;
 	points: number;
+	kills: number;
 }
 
 export interface PlayerWorlds {
