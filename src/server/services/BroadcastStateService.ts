@@ -1,5 +1,5 @@
 import { OnStart, Service } from "@flamework/core";
-import { createBroadcaster } from "@rbxts/reflex";
+import { createBroadcaster, loggerMiddleware } from "@rbxts/reflex";
 import { producer } from "server/producers";
 import Remotes from "shared/remotes";
 import { slices } from "shared/slices";

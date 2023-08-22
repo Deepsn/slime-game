@@ -2,7 +2,7 @@ import { createProducer } from "@rbxts/reflex";
 import { Collectable } from "./types";
 
 export interface CrystalsState {
-	readonly [areaId: string]:
+	readonly [areaId: `Area${number}`]:
 		| {
 				readonly [crystalId: string]: Collectable | undefined;
 		  }
@@ -16,7 +16,7 @@ export const crystalsSlice = createProducer(initialState, {
 		...state,
 		[areaId]: {
 			...state[areaId],
-			[crystal.id]: crystal,
+			[crystal.id]: { ...crystal, type: "Crystal" },
 		},
 	}),
 

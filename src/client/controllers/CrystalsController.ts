@@ -8,8 +8,9 @@ import { selectPlayerWorlds } from "shared/selectors";
 
 @Controller()
 export class CrystalsController implements OnStart {
+	public crystalsContainer = new Instance("Folder");
+
 	private crystalsFolder = ReplicatedStorage.Crystals;
-	private crystalsContainer = new Instance("Folder");
 
 	constructor(private logger: Logger) {}
 
@@ -29,7 +30,7 @@ export class CrystalsController implements OnStart {
 			});
 		};
 
-		const selectCrystalsInArea = (areaId: string) => {
+		const selectCrystalsInArea = (areaId: `Area${number}`) => {
 			return createSelector(selectCrystals, (crystals) => {
 				return crystals[areaId];
 			});
@@ -61,7 +62,7 @@ export class CrystalsController implements OnStart {
 
 				if (crystalInstance) {
 					removeCollider(crystalInstance);
-					crystalInstance.SetAttribute("Id", crystal.id);
+					crystalInstance.Name = crystal.id;
 					crystalInstance.PivotTo(new CFrame(crystal.position));
 					crystalInstance.Parent = this.crystalsContainer;
 				}

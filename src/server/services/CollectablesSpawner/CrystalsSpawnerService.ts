@@ -3,18 +3,32 @@ import { HttpService, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { producer } from "server/producers";
 import { Collectable } from "shared/slices/collectables";
 import { crystalsValues } from "./utils";
+import { t } from "@rbxts/t";
 
 @Service()
 export class CrystalsSpawnerService implements OnStart, OnTick {
 	private readonly SPAWN_TICK = 1; // second to spawn
 	private readonly initialSpawnAmount = 200;
+	private crystalChance: { name: string; chance: number }[] = [];
 	private spawnTick = 0;
+	private totalSpawnChance = 0;
 	private RNG = new Random();
 
 	onStart() {
 		for (const _ of $range(1, this.initialSpawnAmount)) {
 			this.spawn();
 		}
+
+		for (const [crystalName, crystal] of pairs(crystalsValues)) {
+			this.totalSpawnChance += crystal.SpawnChance;
+			this.crystalChance.push({
+				name: crystalName,
+				chance: crystal.SpawnChance,
+			});
+		}
+
+		this.crystalChance.sort((a, b) => a.chance > b.chance);
+		print("chance", this.crystalChance);
 	}
 
 	onTick(dt: number): void {
@@ -30,14 +44,23 @@ export class CrystalsSpawnerService implements OnStart, OnTick {
 		return crystalsValues[crystal.Name as never][areaId];
 	}
 
-	private getRandomCrystal(): Instance {
-		const crystals = ReplicatedStorage.Crystals.GetChildren();
-		const choosenCrystal = crystals[this.RNG.NextInteger(1, crystals.size() - 1)];
+	private getRandomCrystal() {
+		const chanceNumber = this.RNG.NextInteger(0, this.totalSpawnChance);
 
-		return choosenCrystal.Name !== "Coin" ? choosenCrystal : this.getRandomCrystal();
+		for (const crystal of this.crystalChance) {
+			if (chanceNumber <= crystal.chance) {
+				const crystalObject = ReplicatedStorage.Crystals.FindFirstChild(crystal.name) as MeshPart;
+
+				if (!crystalObject) {
+					continue;
+				}
+
+				return crystalObject;
+			}
+		}
 	}
 
-	private getSpawnLocation(areaId: number) {
+	private getSpawnLocation(areaId: number, crystal: BasePart | Model) {
 		const map = Workspace.FindFirstChild(`Map ${areaId}`);
 		const spawnPart = map?.FindFirstChild("Spawn") as Part | undefined;
 
@@ -49,20 +72,27 @@ export class CrystalsSpawnerService implements OnStart, OnTick {
 		const sizeX = spawnPart.Size.X;
 		const sizeZ = spawnPart.Size.Z;
 		const distance = new Vector3(this.RNG.NextInteger(-sizeX, sizeX), 0, this.RNG.NextInteger(-sizeZ, sizeZ));
+		const height = t.instanceIsA("Model")(crystal) ? crystal.GetExtentsSize().Y : crystal.Size.Y;
 
-		return direction.mul(distance);
+		return direction.mul(distance).add(Vector3.yAxis.mul(0.3 + height / 2));
 	}
 
 	spawn() {
 		const areaId = this.RNG.NextInteger(1, 5);
-		const position = this.getSpawnLocation(areaId);
+		const randomCrystal = this.getRandomCrystal();
+
+		if (!randomCrystal) {
+			task.defer(() => this.spawn());
+			return;
+		}
+
+		const position = this.getSpawnLocation(areaId, randomCrystal);
 
 		if (!position) {
 			task.defer(() => this.spawn());
 			return;
 		}
 
-		const randomCrystal = this.getRandomCrystal();
 		const crystal: Collectable = {
 			id: HttpService.GenerateGUID(false),
 			color: randomCrystal.Name,

@@ -1,5 +1,6 @@
 export const crystalsValues = {
 	Purple: {
+		SpawnChance: 1,
 		[1]: 100,
 		[2]: 200,
 		[3]: 400,
@@ -7,6 +8,7 @@ export const crystalsValues = {
 		[5]: 600,
 	},
 	Yellow: {
+		SpawnChance: 4,
 		[1]: 30,
 		[2]: 50,
 		[3]: 100,
@@ -14,6 +16,7 @@ export const crystalsValues = {
 		[5]: 220,
 	},
 	Blue: {
+		SpawnChance: 15,
 		[1]: 15,
 		[2]: 30,
 		[3]: 60,
@@ -21,6 +24,7 @@ export const crystalsValues = {
 		[5]: 100,
 	},
 	Green: {
+		SpawnChance: 80,
 		[1]: 5,
 		[2]: 10,
 		[3]: 20,

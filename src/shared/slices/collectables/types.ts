@@ -3,4 +3,5 @@ export interface Collectable {
 	value: number;
 	color: string;
 	position: Vector3;
+	type?: "Crystal" | "Coin";
 }

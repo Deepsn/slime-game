@@ -14,11 +14,12 @@ export interface PlayerSlime {
 }
 
 export interface PlayerStats {
-	readonly level: number;
-	readonly experience: number;
+	level: number;
+	experience: number;
+	points: number;
 }
 
 export interface PlayerWorlds {
 	readonly unlocked: string[];
-	readonly selected: `Area${number}`;
+	selected: `Area${number}`;
 }
