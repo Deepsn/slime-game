@@ -48,6 +48,7 @@ export default class CharacterService implements OnStart, OnPlayer {
 		alignPosition.Responsiveness = 20;
 		alignPosition.MaxForce = 2e6;
 		alignPosition.ForceLimitMode = Enum.ForceLimitMode.PerAxis;
+		alignPosition.ReactionForceEnabled = true;
 		alignPosition.MaxAxesForce = Vector3.yAxis.mul(2e6);
 
 		alignOrientation.Parent = characterModel;
