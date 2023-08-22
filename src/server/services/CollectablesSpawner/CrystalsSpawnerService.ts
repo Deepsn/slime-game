@@ -1,14 +1,14 @@
 import { Service, OnStart, OnTick } from "@flamework/core";
 import { HttpService, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { producer } from "server/producers";
-import { Collectable } from "shared/slices/collectables";
+import { Crystal } from "shared/slices/collectables";
 import { crystalsValues } from "./utils";
 import { t } from "@rbxts/t";
 
 @Service()
 export class CrystalsSpawnerService implements OnStart, OnTick {
 	private readonly SPAWN_TICK = 1; // second to spawn
-	private readonly initialSpawnAmount = 200;
+	private readonly initialSpawnAmount = 150;
 	private crystalChance: { name: string; chance: number }[] = [];
 	private spawnTick = 0;
 	private totalSpawnChance = 0;
@@ -60,7 +60,7 @@ export class CrystalsSpawnerService implements OnStart, OnTick {
 		}
 	}
 
-	private getSpawnLocation(areaId: number, crystal: BasePart | Model) {
+	getSpawnLocation(areaId: number, crystal: BasePart | Model) {
 		const map = Workspace.FindFirstChild(`Map ${areaId}`);
 		const spawnPart = map?.FindFirstChild("Spawn") as Part | undefined;
 
@@ -93,7 +93,7 @@ export class CrystalsSpawnerService implements OnStart, OnTick {
 			return;
 		}
 
-		const crystal: Collectable = {
+		const crystal: Crystal = {
 			id: HttpService.GenerateGUID(false),
 			color: randomCrystal.Name,
 			position,

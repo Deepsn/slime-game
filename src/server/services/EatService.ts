@@ -69,12 +69,16 @@ export class EatService implements OnStart {
 			return state.collectables.crystals;
 		};
 
-		const selectCollectibles = createSelector(selectCrystals, (crystals) => {
-			return crystals[areaId];
-		});
+		const selectCoins = (state: RootState) => {
+			return state.collectables.coins;
+		};
 
-		const collectible = producer.getState(selectCollectibles);
+		const selectCollectible = (id: string) => {
+			return createSelector(selectCrystals, selectCoins, (crystals, coins) => {
+				return crystals[areaId]?.[id] ?? coins[areaId]?.[id];
+			});
+		};
 
-		return collectible?.[id];
+		return producer.getState(selectCollectible(id));
 	}
 }

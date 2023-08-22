@@ -8,6 +8,7 @@ import { CrystalsController } from "./CrystalsController";
 import { Logger } from "@rbxts/log";
 import SlimeSizeController from "./SlimeSizeController";
 import Remotes from "shared/remotes";
+import { createSelector } from "@rbxts/reflex";
 
 @Controller()
 export class EatController implements OnStart, OnCharacter, OnTick {
@@ -66,21 +67,29 @@ export class EatController implements OnStart, OnCharacter, OnTick {
 			return state.collectables.crystals[this.currentWorld!];
 		};
 
-		const crystals = producer.getState(selectCrystals);
+		const selectCoins = (state: RootState) => {
+			return state.collectables.coins[this.currentWorld!];
+		};
 
-		if (!crystals) {
+		const selectCollectibles = createSelector(selectCrystals, selectCoins, (crystals, coins) => {
+			return { ...crystals, ...coins };
+		});
+
+		const collectables = producer.getState(selectCollectibles);
+
+		if (!collectables) {
 			return $tuple();
 		}
 
 		let closest: Collectable | undefined = undefined;
 		let distance = 10 + this.slimeSizeController.size * 2;
 
-		for (const [, crystal] of pairs(crystals)) {
-			const dist = crystal.position.sub(origin).Magnitude;
+		for (const [, collectable] of pairs(collectables)) {
+			const dist = collectable.position.sub(origin).Magnitude;
 
 			if (dist < distance) {
 				distance = dist;
-				closest = crystal;
+				closest = collectable;
 			}
 		}
 
