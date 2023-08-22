@@ -1,8 +1,10 @@
-import { OnTick } from "@flamework/core";
+import { OnStart, OnTick } from "@flamework/core";
 import { Component, BaseComponent } from "@flamework/components";
 import { t } from "@rbxts/t";
 import { Players } from "@rbxts/services";
 import SlimeSizeController from "client/controllers/SlimeSizeController";
+import { producer } from "client/producers";
+import { selectPlayerStats } from "shared/selectors";
 
 @Component({
 	tag: "Overhead",
@@ -12,17 +14,32 @@ import SlimeSizeController from "client/controllers/SlimeSizeController";
 })
 export default class Overhead
 	extends BaseComponent<{ owner: number }, ReplicatedStorage["assets"]["Overhead"]>
-	implements OnTick
+	implements OnStart, OnTick
 {
 	private owner = Players.GetPlayerByUserId(this.attributes.owner);
 	private backgroundFrame = this.instance.bg;
 
 	constructor(private readonly slimeSizeController: SlimeSizeController) {
 		super();
+	}
 
+	onStart(): void {
 		if (!this.owner) {
-			this.destroy();
+			return;
 		}
+
+		const unsubscribe = producer.subscribe(selectPlayerStats(tostring(this.owner.UserId)), (stats) => {
+			if (!stats) {
+				return;
+			}
+
+			this.backgroundFrame.Kills.Text = `${stats.kills} KILLS`;
+			this.backgroundFrame.Level.Text = `Level ${stats.level}`;
+		});
+
+		this.backgroundFrame.plr_name.Text = this.owner.Name;
+
+		this.maid.statsUnsubscribe = unsubscribe;
 	}
 
 	onTick() {
@@ -30,17 +47,6 @@ export default class Overhead
 			return;
 		}
 
-		const leaderstats = this.owner.FindFirstChild("leaderstats") as Leaderstats | undefined;
-
-		if (!leaderstats) {
-			return;
-		}
-
-		const isProtected = this.owner.GetAttribute("Protected") as boolean;
-
 		this.instance.StudsOffsetWorldSpace = Vector3.yAxis.mul(this.slimeSizeController.size / 2 + 2);
-
-		this.backgroundFrame.plr_name.Text = `${this.owner.Name}${isProtected ? " - 🛡" : ""}`;
-		this.backgroundFrame.Kills.Text = `${leaderstats.Kills.Value} KILLS`;
 	}
 }

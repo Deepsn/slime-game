@@ -5,6 +5,7 @@ export const defaultPlayerData: PlayerData = {
 		level: 1,
 		experience: 0,
 		points: 0,
+		kills: 0,
 	},
 	worlds: {
 		unlocked: [],
