@@ -19,6 +19,7 @@ export default class CharacterService implements OnStart, OnPlayer {
 
 		const alignOrientation = new Instance("AlignOrientation");
 		const alignPosition = new Instance("AlignPosition");
+		const linearVelocity = new Instance("LinearVelocity");
 
 		characterMesh.PivotTo(root.CFrame);
 
@@ -38,15 +39,20 @@ export default class CharacterService implements OnStart, OnPlayer {
 		characterMesh.Anchored = false;
 		characterMesh.Name = "Mesh";
 
-		alignPosition.ApplyAtCenterOfMass = true;
-		alignPosition.Responsiveness = 20;
-		alignPosition.MaxForce = 2e6;
+		linearVelocity.MaxForce = 100;
 
+		alignOrientation.Mode = Enum.OrientationAlignmentMode.OneAttachment;
 		alignOrientation.Responsiveness = 20;
 		alignOrientation.MaxTorque = 2e6;
 
+		alignPosition.Responsiveness = 20;
+		alignPosition.MaxForce = 2e6;
+		alignPosition.ForceLimitMode = Enum.ForceLimitMode.PerAxis;
+		alignPosition.MaxAxesForce = Vector3.yAxis.mul(2e6);
+
 		alignOrientation.Parent = characterModel;
 		alignPosition.Parent = characterModel;
+		linearVelocity.Parent = characterModel;
 
 		rootWeld.Parent = characterModel;
 		root.Parent = characterModel;
