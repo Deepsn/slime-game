@@ -86,20 +86,12 @@ export default class MovementController implements OnRender, OnStart, OnCharacte
 		const direction = moveDirection.mul(16 * dt * 60);
 		const origin = this.camera.Focus.Position;
 
-		// const position = this.attachment.WorldPosition.mul(new Vector3(1, 0, 1)).add(
-		// 	Vector3.yAxis.mul((height / 2) * 0.74),
-		// );
-
-		// const newPosition = position.add(direction);
+		this.attachment.WorldPosition = Vector3.yAxis.mul(0.3 + (height / 2) * 0.74);
 
 		this.linearVelocity.VectorVelocity = direction;
 
 		if (moveDirection.Magnitude > 0) {
-			const invertedMoveDirection = moveDirection.mul(-1);
-			const angle = math.deg(math.atan2(invertedMoveDirection.X, invertedMoveDirection.Z));
-
 			this.alignOrientation.CFrame = new CFrame(origin, origin.add(direction.Cross(Vector3.yAxis)));
-			// 	this.attachment.WorldOrientation = Vector3.yAxis.mul(angle - 90);
 		}
 	}
 }
