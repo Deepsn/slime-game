@@ -32,4 +32,19 @@ export const slimeSlice = createProducer(initialState, {
 					: undefined,
 		};
 	},
+
+	setSlimeStat: (state, player: string, statType: keyof PlayerSlime, newStat: number) => {
+		const slimeStats = state[player];
+
+		return {
+			...state,
+			[player]:
+				slimeStats !== undefined
+					? {
+							...slimeStats,
+							[statType]: newStat,
+					  }
+					: undefined,
+		};
+	},
 });

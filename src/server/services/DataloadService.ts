@@ -50,6 +50,8 @@ export class DataLoadService implements OnStart, OnPlayer {
 
 			producer.loadPlayerData(tostring(player.UserId), profile.Data);
 
+			producer.setSlimeStat(tostring(player.UserId), "size", 1);
+
 			this.profiles.set(player, [janitor, profile]);
 		} else {
 			player.Kick();
