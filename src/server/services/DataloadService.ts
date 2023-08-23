@@ -66,6 +66,7 @@ export class DataLoadService implements OnStart, OnPlayer {
 
 			profile.Release();
 			janitor.Destroy();
+			this.logger.Info("{player}'s profile has been released", player.Name);
 			this.profiles.delete(player);
 		}
 	}
