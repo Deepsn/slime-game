@@ -24,7 +24,7 @@ export class ExperienceService implements OnPlayer {
 
 				const slimeStats = producer.getState(selectPlayerSlime(tostring(player.UserId)));
 
-				if (slimeStats) {
+				if (slimeStats && stats.level < 100) {
 					producer.setSlimeStat(tostring(player.UserId), "size", slimeStats.size * 1.4);
 				}
 			}

@@ -73,7 +73,7 @@ export class CrystalsSpawnerService implements OnStart, OnTick {
 		const distance = new Vector3(this.RNG.NextInteger(-sizeX, sizeX), 0, this.RNG.NextInteger(-sizeZ, sizeZ));
 		const height = t.instanceIsA("Model")(crystal) ? crystal.GetExtentsSize().Y : crystal.Size.Y;
 
-		return spawnPart.Position.add(direction.mul(distance).add(Vector3.yAxis.mul(0.3 + height / 2)));
+		return spawnPart.Position.add(direction.mul(distance).add(Vector3.yAxis.mul(0.3 + height / 3)));
 	}
 
 	spawn() {
