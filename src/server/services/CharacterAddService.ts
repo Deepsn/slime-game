@@ -1,5 +1,6 @@
 import { Modding, Service, OnInit } from "@flamework/core";
 import { OnPlayer } from "./PlayerJoinService";
+import { Players } from "@rbxts/services";
 
 export interface OnCharacter {
 	onCharacterAdd?(player: Player, character: Model): void;
@@ -11,7 +12,14 @@ class CharacterAdd implements OnInit, OnPlayer {
 	private listeners = new Set<OnCharacter>();
 
 	onInit(): void {
-		Modding.onListenerAdded<OnCharacter>((listener) => this.listeners.add(listener));
+		Modding.onListenerAdded<OnCharacter>((listener) => {
+			this.listeners.add(listener);
+			for (const player of Players.GetPlayers()) {
+				if (player.Character) {
+					task.spawn(() => listener.onCharacterAdd?.(player, player.Character!));
+				}
+			}
+		});
 		Modding.onListenerRemoved<OnCharacter>((listener) => this.listeners.delete(listener));
 	}
 

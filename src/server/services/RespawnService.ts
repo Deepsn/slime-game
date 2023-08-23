@@ -4,13 +4,17 @@ import { selectPlayerWorlds } from "shared/selectors";
 import { Players, Workspace } from "@rbxts/services";
 import { Logger } from "@rbxts/log";
 import { OnCharacter } from "./CharacterAddService";
+import CharacterService from "./CharacterService";
 
 @Service()
 export class RespawnService implements OnStart, OnCharacter {
 	private worlds = new Map<string, Folder>();
 	private RNG = new Random();
 
-	constructor(private logger: Logger) {}
+	constructor(
+		private logger: Logger,
+		private readonly characterService: CharacterService,
+	) {}
 
 	onStart(): void {
 		const findWorld = (worldIndex: number) => {
@@ -29,7 +33,20 @@ export class RespawnService implements OnStart, OnCharacter {
 	}
 
 	onCharacterAdd(player: Player, character: Model): void {
+		print("connecting", character.GetFullName());
 		task.delay(0.1, () => this.spawn(player));
+
+		character.AncestryChanged.Connect((_, parent) => {
+			if (parent !== undefined || !player.Character) {
+				print("not destroying");
+				return;
+			}
+
+			print("destroying");
+
+			player.Character = undefined;
+			this.characterService.onPlayerJoin(player);
+		});
 	}
 
 	getRespawnLocation(player: Player) {
