@@ -128,7 +128,7 @@ export class RespawnService implements OnStart, OnCharacter {
 		producer.setStats(tostring(player.UserId), "forcefield", true);
 		character.PivotTo(new CFrame(respawnLocation));
 
-		task.delay(3, () => {
+		task.delay(30, () => {
 			if (!player.IsDescendantOf(Players)) {
 				return;
 			}
