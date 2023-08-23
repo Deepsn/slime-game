@@ -47,6 +47,7 @@ export default class Overhead
 			return;
 		}
 
-		this.instance.StudsOffsetWorldSpace = Vector3.yAxis.mul(this.slimeSizeController.size / 2 + 2);
+		const size = this.slimeSizeController.sizes.get(this.owner.UserId) ?? 0;
+		this.instance.StudsOffsetWorldSpace = Vector3.yAxis.mul(size / 2 + 2);
 	}
 }

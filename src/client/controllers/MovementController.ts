@@ -81,7 +81,7 @@ export default class MovementController implements OnRender, OnStart, OnCharacte
 			return;
 		}
 
-		const height = this.slimeSizeController.size;
+		const height = this.slimeSizeController.sizes.get(this.localPlayer.UserId) ?? 0;
 		const moveDirection = this.getMoveDirection();
 		const direction = moveDirection.mul(16 * dt * 60);
 		const origin = this.camera.Focus.Position;

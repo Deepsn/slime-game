@@ -52,10 +52,11 @@ export class EatController implements OnStart, OnCharacter, OnTick {
 			return;
 		}
 
+		const size = this.slimeSizeController.sizes.get(this.localPlayer.UserId) ?? 0;
 		const origin = this.root.Position;
 		const [closestBlob, distanceFromBlob] = this.getClosestBlob(origin);
 		const [closestPlayer, distanceFromPlayer] = this.getClosestPlayer(origin);
-		const minimalSize = this.slimeSizeController.size / 1.3;
+		const minimalSize = size / 1.3;
 		const isInsideBlob = distanceFromBlob !== undefined && distanceFromBlob < minimalSize;
 		const isInsidePlayer = distanceFromPlayer !== undefined && distanceFromPlayer < minimalSize;
 
@@ -72,7 +73,8 @@ export class EatController implements OnStart, OnCharacter, OnTick {
 		const players = Players.GetPlayers();
 
 		let closest: Player | undefined = undefined;
-		let distance = 10 + this.slimeSizeController.size * 2;
+		const size = this.slimeSizeController.sizes.get(this.localPlayer.UserId) ?? 0;
+		let distance = 10 + size * 2;
 
 		for (const player of players) {
 			if (player === this.localPlayer) {
@@ -126,7 +128,7 @@ export class EatController implements OnStart, OnCharacter, OnTick {
 		}
 
 		let closest: Collectable | undefined = undefined;
-		let distance = 10 + this.slimeSizeController.size * 2;
+		let distance = 10 + (this.slimeSizeController.sizes.get(this.localPlayer.UserId) ?? 0) * 2;
 
 		for (const [, collectable] of pairs(collectables)) {
 			const dist = collectable.position.sub(origin).Magnitude;

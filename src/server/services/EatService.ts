@@ -54,12 +54,12 @@ export class EatService implements OnStart {
 			}
 
 			if (collectible.type === "Crystal") {
+				producer.removeCrystal(areaId, collectibleId);
 				producer.changeStats(tostring(player.UserId), "points", collectible.value);
 				producer.changeSlimeStat(tostring(player.UserId), "size", 1);
-				producer.removeCrystal(areaId, collectibleId);
 			} else if (collectible.type === "Coin") {
-				producer.changeBalance(tostring(player.UserId), "coins", collectible.value);
 				producer.removeCoin(areaId, collectibleId);
+				producer.changeBalance(tostring(player.UserId), "coins", collectible.value);
 			}
 		});
 

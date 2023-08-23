@@ -7,7 +7,8 @@ import { Janitor } from "@rbxts/janitor";
 
 @Controller()
 export default class SlimeSizeController implements OnCharacter {
-	public size = 0;
+	public sizes = new Map<number, number>();
+
 	private janitors = new Map<Player, Janitor>();
 	private tweenInfo = new TweenInfo(0.2, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out, 0, false, 0);
 
@@ -16,7 +17,7 @@ export default class SlimeSizeController implements OnCharacter {
 		const janitor = new Janitor();
 
 		const update = (size: number) => {
-			this.size = size;
+			this.sizes.set(player.UserId, size);
 
 			const goalSize = Vector3.one.mul(new Vector3(1, 0.74, 1)).mul(size);
 			const tween = TweenService.Create(characterMesh, this.tweenInfo, { Size: goalSize });
