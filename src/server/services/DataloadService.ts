@@ -16,7 +16,7 @@ export class DataLoadService implements OnStart, OnPlayer {
 	constructor(private logger: Logger) {}
 
 	onStart() {
-		this.profileStore = ProfileService.GetProfileStore("PlayerData", defaultPlayerData);
+		this.profileStore = ProfileService.GetProfileStore("PlayerProfiles-DEV", defaultPlayerData);
 	}
 
 	onPlayerJoin(player: Player): void {
