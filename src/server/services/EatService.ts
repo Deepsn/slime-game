@@ -55,7 +55,7 @@ export class EatService implements OnStart {
 
 			if (collectible.type === "Crystal") {
 				producer.removeCrystal(areaId, collectibleId);
-				producer.changeStats(tostring(player.UserId), "points", collectible.value);
+				producer.changeStats(tostring(player.UserId), "experience", collectible.value);
 				producer.changeSlimeStat(tostring(player.UserId), "size", 1);
 			} else if (collectible.type === "Coin") {
 				producer.removeCoin(areaId, collectibleId);
