@@ -108,7 +108,7 @@ export class RespawnService implements OnStart, OnCharacter {
 			return;
 		}
 
-		producer.changeStats(tostring(player.UserId), "forcefield", true);
+		producer.setStats(tostring(player.UserId), "forcefield", true);
 		character.PivotTo(new CFrame(respawnLocation));
 
 		task.delay(3, () => {
@@ -116,7 +116,7 @@ export class RespawnService implements OnStart, OnCharacter {
 				return;
 			}
 
-			producer.changeStats(tostring(player.UserId), "forcefield", false);
+			producer.setStats(tostring(player.UserId), "forcefield", false);
 		});
 	}
 }
