@@ -28,7 +28,6 @@ export class CrystalsSpawnerService implements OnStart, OnTick {
 		}
 
 		this.crystalChance.sort((a, b) => a.chance < b.chance);
-		print("chance", this.crystalChance);
 	}
 
 	onTick(dt: number): void {

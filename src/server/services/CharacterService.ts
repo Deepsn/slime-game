@@ -1,6 +1,7 @@
 import { OnStart, Service } from "@flamework/core";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { OnPlayer } from "./PlayerJoinService";
+import { producer } from "server/producers";
 
 @Service()
 export default class CharacterService implements OnStart, OnPlayer {
@@ -65,5 +66,7 @@ export default class CharacterService implements OnStart, OnPlayer {
 
 		characterMesh.SetNetworkOwner(player);
 		player.Character = characterModel;
+
+		producer.setSlimeStat(tostring(player.UserId), "size", 1);
 	}
 }
