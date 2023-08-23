@@ -4,7 +4,7 @@ import { createSelector } from "@rbxts/reflex";
 import { Players } from "@rbxts/services";
 import { RootState, producer } from "server/producers";
 import Remotes from "shared/remotes";
-import { selectPlayerSlime, selectPlayerWorlds } from "shared/selectors";
+import { selectPlayerSlime, selectPlayerStats, selectPlayerWorlds } from "shared/selectors";
 import { RespawnService } from "./RespawnService";
 
 @Service()
@@ -114,12 +114,21 @@ export class EatService implements OnStart {
 				return;
 			}
 
+			const inForceField = producer.getState(selectPlayerStats(tostring(target.UserId)))?.forcefield;
+
+			if (inForceField || inForceField === undefined) {
+				return;
+			}
+
+			this.logger.Info("Adding {size} to {player}", targetSize, player.Name);
+
 			// eat
-			producer.changeSlimeStat(tostring(player.UserId), "size", targetSize);
 			producer.setSlimeStat(tostring(target.UserId), "size", 1);
-			producer.changeStats(tostring(player.UserId), "kills", 1);
 
 			this.respawnService.spawn(target);
+
+			producer.changeSlimeStat(tostring(player.UserId), "size", targetSize);
+			producer.changeStats(tostring(player.UserId), "kills", 1);
 		});
 	}
 

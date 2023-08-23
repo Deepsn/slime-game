@@ -29,12 +29,13 @@ export default class Overhead
 		}
 
 		const unsubscribe = producer.subscribe(selectPlayerStats(tostring(this.owner.UserId)), (stats) => {
-			if (!stats) {
+			if (!stats || !this.owner) {
 				return;
 			}
 
 			this.backgroundFrame.Kills.Text = `${stats.kills} KILLS`;
 			this.backgroundFrame.Level.Text = `Level ${stats.level}`;
+			this.backgroundFrame.plr_name.Text = `${this.owner.Name}${stats.forcefield ? " - 🛡️" : ""}`;
 		});
 
 		this.backgroundFrame.plr_name.Text = this.owner.Name;

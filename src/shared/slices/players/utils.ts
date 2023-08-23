@@ -7,6 +7,7 @@ export const defaultPlayerData: PlayerData = {
 		maxExperience: 100,
 		points: 0,
 		kills: 0,
+		forcefield: false,
 	},
 	worlds: {
 		unlocked: [],

@@ -18,7 +18,7 @@ export const statsSlice = createProducer(initialState, {
 		[player]: undefined,
 	}),
 
-	changeStats: (state, player: string, statType: keyof PlayerStats, newStat: number) => {
+	changeStats: (state, player: string, statType: keyof PlayerStats, newStat: ValueOf<PlayerStats>) => {
 		const stats = state[player];
 
 		return {

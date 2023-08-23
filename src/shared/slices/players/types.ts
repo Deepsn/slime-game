@@ -19,6 +19,7 @@ export interface PlayerStats {
 	maxExperience: number;
 	points: number;
 	kills: number;
+	forcefield: boolean;
 }
 
 export interface PlayerWorlds {
