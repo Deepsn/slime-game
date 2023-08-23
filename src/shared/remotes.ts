@@ -7,6 +7,7 @@ const Remotes = Net.Definitions.Create({
 	collectibles: Net.Definitions.Namespace({
 		collect: Net.Definitions.ClientToServerEvent<[id: string]>(),
 	}),
+	eatPlayer: Net.Definitions.ClientToServerEvent<[id: number]>(),
 });
 
 export default Remotes;

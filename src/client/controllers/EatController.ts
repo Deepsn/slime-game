@@ -9,12 +9,15 @@ import { Logger } from "@rbxts/log";
 import SlimeSizeController from "./SlimeSizeController";
 import Remotes from "shared/remotes";
 import { createSelector } from "@rbxts/reflex";
+import { ClientSenderEvent } from "@rbxts/net/out/client/ClientEvent";
 
 @Controller()
 export class EatController implements OnStart, OnCharacter, OnTick {
 	private root?: BasePart;
 	private localPlayer = Players.LocalPlayer;
 	private collectiblesRemotes = Remotes.Client.GetNamespace("collectibles");
+	private collectRemote?: ClientSenderEvent<[id: string]>;
+	private eatPlayerRemote?: ClientSenderEvent<[id: number]>;
 	private currentWorld?: `Area${number}` = undefined;
 
 	constructor(
@@ -24,6 +27,9 @@ export class EatController implements OnStart, OnCharacter, OnTick {
 	) {}
 
 	onStart(): void {
+		this.collectRemote = this.collectiblesRemotes.Get("collect");
+		this.eatPlayerRemote = Remotes.Client.Get("eatPlayer");
+
 		producer.subscribe(selectPlayerWorlds(tostring(this.localPlayer.UserId)), (worlds) => {
 			if (!worlds) {
 				return;
@@ -47,15 +53,53 @@ export class EatController implements OnStart, OnCharacter, OnTick {
 		}
 
 		const origin = this.root.Position;
-		const [closest, distance] = this.getClosestBlob(origin);
-		// const object =
-		// 	closest !== undefined ? this.crystalsController.crystalsContainer.FindFirstChild(closest.id) : undefined;
-		const isInside = distance !== undefined && distance < this.slimeSizeController.size / 1.3;
-		const collect = this.collectiblesRemotes.Get("collect");
+		const [closestBlob, distanceFromBlob] = this.getClosestBlob(origin);
+		const [closestPlayer, distanceFromPlayer] = this.getClosestPlayer(origin);
+		const minimalSize = this.slimeSizeController.size / 1.3;
+		const isInsideBlob = distanceFromBlob !== undefined && distanceFromBlob < minimalSize;
+		const isInsidePlayer = distanceFromPlayer !== undefined && distanceFromPlayer < minimalSize;
 
-		if (isInside && closest) {
-			collect.SendToServer(closest.id);
+		if (isInsideBlob && closestBlob) {
+			this.collectRemote?.SendToServer(closestBlob.id);
 		}
+
+		if (isInsidePlayer && closestPlayer) {
+			this.eatPlayerRemote?.SendToServer(closestPlayer.UserId);
+		}
+	}
+
+	getClosestPlayer(origin: Vector3) {
+		const players = Players.GetPlayers();
+
+		let closest: Player | undefined = undefined;
+		let distance = 10 + this.slimeSizeController.size * 2;
+
+		for (const player of players) {
+			if (player === this.localPlayer) {
+				continue;
+			}
+
+			const character = player.Character;
+
+			if (!character) {
+				continue;
+			}
+
+			const root = character.FindFirstChild("Root") as BasePart | undefined;
+
+			if (!root) {
+				continue;
+			}
+
+			const dist = root.Position.sub(origin).Magnitude;
+
+			if (dist < distance) {
+				distance = dist;
+				closest = player;
+			}
+		}
+
+		return $tuple(closest, distance);
 	}
 
 	getClosestBlob(origin: Vector3) {
