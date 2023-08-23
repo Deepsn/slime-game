@@ -5,10 +5,14 @@ import { Players } from "@rbxts/services";
 import { RootState, producer } from "server/producers";
 import Remotes from "shared/remotes";
 import { selectPlayerSlime, selectPlayerWorlds } from "shared/selectors";
+import { RespawnService } from "./RespawnService";
 
 @Service()
 export class EatService implements OnStart {
-	constructor(private logger: Logger) {}
+	constructor(
+		private logger: Logger,
+		private readonly respawnService: RespawnService,
+	) {}
 
 	onStart() {
 		const collectiblesRemotes = Remotes.Server.GetNamespace("collectibles");
@@ -114,6 +118,8 @@ export class EatService implements OnStart {
 			producer.changeSlimeStat(tostring(player.UserId), "size", targetSize);
 			producer.setSlimeStat(tostring(target.UserId), "size", 1);
 			producer.changeStats(tostring(player.UserId), "kills", 1);
+
+			this.respawnService.spawn(target);
 		});
 	}
 

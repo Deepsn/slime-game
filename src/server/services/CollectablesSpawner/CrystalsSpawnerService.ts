@@ -27,7 +27,7 @@ export class CrystalsSpawnerService implements OnStart, OnTick {
 			});
 		}
 
-		this.crystalChance.sort((a, b) => a.chance > b.chance);
+		this.crystalChance.sort((a, b) => a.chance < b.chance);
 		print("chance", this.crystalChance);
 	}
 
@@ -69,12 +69,12 @@ export class CrystalsSpawnerService implements OnStart, OnTick {
 		}
 
 		const direction = this.RNG.NextUnitVector();
-		const sizeX = spawnPart.Size.X;
-		const sizeZ = spawnPart.Size.Z;
+		const sizeX = spawnPart.Size.X / 2;
+		const sizeZ = spawnPart.Size.Z / 2;
 		const distance = new Vector3(this.RNG.NextInteger(-sizeX, sizeX), 0, this.RNG.NextInteger(-sizeZ, sizeZ));
 		const height = t.instanceIsA("Model")(crystal) ? crystal.GetExtentsSize().Y : crystal.Size.Y;
 
-		return direction.mul(distance).add(Vector3.yAxis.mul(0.3 + height / 2));
+		return spawnPart.Position.add(direction.mul(distance).add(Vector3.yAxis.mul(0.3 + height / 2)));
 	}
 
 	spawn() {
