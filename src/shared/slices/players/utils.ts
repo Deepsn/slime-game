@@ -4,7 +4,7 @@ export const defaultPlayerData: PlayerData = {
 	stats: {
 		level: 1,
 		experience: 0,
-		maxExperience: 100,
+		maxExperience: 400,
 		kills: 0,
 		forcefield: false,
 	},
