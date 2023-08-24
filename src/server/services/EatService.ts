@@ -6,6 +6,7 @@ import { RootState, producer } from "server/producers";
 import Remotes from "shared/remotes";
 import { selectPlayerSlime, selectPlayerStats, selectPlayerWorlds } from "shared/selectors";
 import { RespawnService } from "./RespawnService";
+import { defaultPlayerData } from "shared/slices/players";
 
 @Service()
 export class EatService implements OnStart {
@@ -122,7 +123,10 @@ export class EatService implements OnStart {
 			this.logger.Info("Adding {size} to {player}", targetSize, player.Name);
 
 			// eat
-			producer.setSlimeStat(tostring(target.UserId), "size", 1);
+			// producer.setSlimeStat(tostring(target.UserId), "size", 1);
+			producer.setStats(tostring(player.UserId), "level", defaultPlayerData.stats.level);
+			producer.setStats(tostring(player.UserId), "experience", defaultPlayerData.stats.experience);
+			producer.setStats(tostring(player.UserId), "maxExperience", defaultPlayerData.stats.maxExperience);
 
 			this.respawnService.spawn(target);
 

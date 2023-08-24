@@ -51,6 +51,9 @@ export class DataLoadService implements OnStart, OnPlayer {
 			producer.loadPlayerData(tostring(player.UserId), profile.Data);
 
 			producer.setSlimeStat(tostring(player.UserId), "size", 1);
+			producer.setStats(tostring(player.UserId), "level", defaultPlayerData.stats.level);
+			producer.setStats(tostring(player.UserId), "experience", defaultPlayerData.stats.experience);
+			producer.setStats(tostring(player.UserId), "maxExperience", defaultPlayerData.stats.maxExperience);
 
 			this.profiles.set(player, [janitor, profile]);
 		} else {

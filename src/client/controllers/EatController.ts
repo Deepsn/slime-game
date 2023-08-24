@@ -1,14 +1,13 @@
 import { Controller, OnStart, OnTick } from "@flamework/core";
 import { OnCharacter } from "./CharacterAddController";
 import { Players } from "@rbxts/services";
-import { RootState, producer } from "client/producers";
+import { producer } from "client/producers";
 import { selectPlayerWorlds } from "shared/selectors";
 import { Collectable } from "shared/slices/collectables";
 import { CrystalsController } from "./CrystalsController";
 import { Logger } from "@rbxts/log";
 import SlimeSizeController from "./SlimeSizeController";
 import Remotes from "shared/remotes";
-import { createSelector } from "@rbxts/reflex";
 import { ClientSenderEvent } from "@rbxts/net/out/client/ClientEvent";
 import { CoinsController } from "./CoinsController";
 
