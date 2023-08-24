@@ -26,18 +26,25 @@ export const selectPlayerSlime = (playerId: string) => {
 	};
 };
 
+export const selectPlayerUpgrades = (playerId: string) => {
+	return (state: SharedState) => {
+		return state.players.upgrades[playerId];
+	};
+};
+
 export const selectPlayerData = (playerId: string) => {
 	return createSelector(
 		selectPlayerBalance(playerId),
 		selectPlayerWorlds(playerId),
 		selectPlayerStats(playerId),
 		selectPlayerSlime(playerId),
-		(balance, worlds, stats, slime): PlayerData | undefined => {
-			if (!balance || !worlds || !stats || !slime) {
+		selectPlayerUpgrades(playerId),
+		(balance, worlds, stats, slime, upgrades): PlayerData | undefined => {
+			if (!balance || !worlds || !stats || !slime || !upgrades) {
 				return;
 			}
 
-			return { balance, worlds, stats, slime };
+			return { balance, worlds, stats, slime, upgrades };
 		},
 	);
 };
