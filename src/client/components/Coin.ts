@@ -1,9 +1,9 @@
 import { OnStart, OnTick } from "@flamework/core";
 import { Component, BaseComponent } from "@flamework/components";
 
-@Component({ tag: "Crystal" })
-export class Crystal extends BaseComponent<{}, MeshPart> implements OnStart, OnTick {
-	private originalPosition = this.instance.Position;
+@Component({ tag: "Coin" })
+export class Coin extends BaseComponent<{}, Model> implements OnStart, OnTick {
+	private originalPosition = this.instance.GetPivot().mul(CFrame.Angles(0, 0, math.rad(90)));
 	private orientationTick = 0;
 
 	onStart() {}
@@ -19,9 +19,6 @@ export class Crystal extends BaseComponent<{}, MeshPart> implements OnStart, OnT
 			this.orientationTick = 360;
 		}
 
-		const offsetY = math.cos(tick()) / 10;
-
-		this.instance.Position = this.originalPosition.add(Vector3.yAxis.mul(offsetY));
-		this.instance.Orientation = Vector3.yAxis.mul(this.orientationTick);
+		this.instance.PivotTo(this.originalPosition.mul(CFrame.Angles(math.rad(this.orientationTick), 0, 0)));
 	}
 }
