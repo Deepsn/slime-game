@@ -5,10 +5,12 @@ import { Players, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { t } from "@rbxts/t";
 import { RootState, producer } from "client/producers";
 import { selectPlayerWorlds } from "shared/selectors";
+import { Coin } from "shared/slices/collectables";
 
 @Controller()
 export class CoinsController implements OnStart {
 	public coinsController = new Instance("Folder");
+	public coins: Coin[] = [];
 
 	private coinObject = ReplicatedStorage.Crystals.Coin;
 
@@ -42,6 +44,8 @@ export class CoinsController implements OnStart {
 			}
 
 			const unobserve = producer.observe(selectCoinsInArea(area), (coin) => {
+				this.coins.push(coin);
+
 				const coinInstance = this.coinObject.Clone();
 
 				const removeCollider = (instance: BasePart | Model) => {
@@ -68,6 +72,7 @@ export class CoinsController implements OnStart {
 
 				return () => {
 					coinInstance?.Destroy();
+					this.coins = this.coins.filter((coinObject) => coinObject !== coin);
 				};
 			});
 

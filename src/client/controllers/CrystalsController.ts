@@ -5,10 +5,12 @@ import { Players, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { t } from "@rbxts/t";
 import { RootState, producer } from "client/producers";
 import { selectPlayerWorlds } from "shared/selectors";
+import { Crystal } from "shared/slices/collectables";
 
 @Controller()
 export class CrystalsController implements OnStart {
 	public crystalsContainer = new Instance("Folder");
+	public crystals: Crystal[] = [];
 
 	private crystalsFolder = ReplicatedStorage.Crystals;
 
@@ -42,8 +44,9 @@ export class CrystalsController implements OnStart {
 			}
 
 			const unobserve = producer.observe(selectCrystalsInArea(area), (crystal) => {
+				this.crystals.push(crystal);
+
 				const crystalInstance = this.crystalsFolder.FindFirstChild(crystal.color)?.Clone() as
-					| Model
 					| MeshPart
 					| undefined;
 
@@ -71,6 +74,7 @@ export class CrystalsController implements OnStart {
 
 				return () => {
 					crystalInstance?.Destroy();
+					this.crystals = this.crystals.filter((crystalObject) => crystalObject !== crystal);
 				};
 			});
 

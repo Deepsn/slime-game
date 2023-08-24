@@ -10,6 +10,7 @@ import SlimeSizeController from "./SlimeSizeController";
 import Remotes from "shared/remotes";
 import { createSelector } from "@rbxts/reflex";
 import { ClientSenderEvent } from "@rbxts/net/out/client/ClientEvent";
+import { CoinsController } from "./CoinsController";
 
 @Controller()
 export class EatController implements OnStart, OnCharacter, OnTick {
@@ -23,6 +24,7 @@ export class EatController implements OnStart, OnCharacter, OnTick {
 	constructor(
 		private logger: Logger,
 		private readonly crystalsController: CrystalsController,
+		private readonly coinsController: CoinsController,
 		private readonly slimeSizeController: SlimeSizeController,
 	) {}
 
@@ -109,28 +111,28 @@ export class EatController implements OnStart, OnCharacter, OnTick {
 			return $tuple();
 		}
 
-		const selectCrystals = (state: RootState) => {
-			return state.collectables.crystals[this.currentWorld!];
-		};
+		// const selectCrystals = (state: RootState) => {
+		// 	return state.collectables.crystals[this.currentWorld!];
+		// };
 
-		const selectCoins = (state: RootState) => {
-			return state.collectables.coins[this.currentWorld!];
-		};
+		// const selectCoins = (state: RootState) => {
+		// 	return state.collectables.coins[this.currentWorld!];
+		// };
 
-		const selectCollectibles = createSelector(selectCrystals, selectCoins, (crystals, coins) => {
-			return { ...crystals, ...coins };
-		});
+		// const selectCollectibles = createSelector(selectCrystals, selectCoins, (crystals, coins) => {
+		// 	return { ...crystals, ...coins };
+		// });
 
-		const collectables = producer.getState(selectCollectibles);
+		const collectables = [...this.crystalsController.crystals, ...this.coinsController.coins];
 
-		if (!collectables) {
+		if (collectables.size() === 0) {
 			return $tuple();
 		}
 
 		let closest: Collectable | undefined = undefined;
 		let distance = 10 + (this.slimeSizeController.sizes.get(this.localPlayer.UserId) ?? 0) * 2;
 
-		for (const [, collectable] of pairs(collectables)) {
+		for (const collectable of collectables) {
 			const dist = collectable.position.sub(origin).Magnitude;
 
 			if (dist < distance) {
