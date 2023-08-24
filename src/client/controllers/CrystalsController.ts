@@ -65,6 +65,8 @@ export class CrystalsController implements OnStart {
 					crystalInstance.Name = crystal.id;
 					crystalInstance.PivotTo(new CFrame(crystal.position));
 					crystalInstance.Parent = this.crystalsContainer;
+
+					crystalInstance.AddTag("Crystal");
 				}
 
 				return () => {

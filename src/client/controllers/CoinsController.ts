@@ -62,6 +62,8 @@ export class CoinsController implements OnStart {
 					coinInstance.Name = coin.id;
 					coinInstance.PivotTo(new CFrame(coin.position));
 					coinInstance.Parent = this.coinsController;
+
+					coinInstance.AddTag("Coin");
 				}
 
 				return () => {
