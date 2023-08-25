@@ -8,6 +8,7 @@ import Gizmo from "@rbxts/gizmo";
 
 @Controller()
 export default class MovementController implements OnRender, OnStart, OnCharacter {
+	private readonly SPEED = 16;
 	private attachment?: Attachment;
 	private alignOrientation?: AlignOrientation;
 	private linearVelocity?: LinearVelocity;
@@ -84,7 +85,7 @@ export default class MovementController implements OnRender, OnStart, OnCharacte
 
 		const height = this.slimeSizeController.sizes.get(this.localPlayer.UserId) ?? 0;
 		const moveDirection = this.getMoveDirection();
-		const direction = moveDirection.mul(16 * dt * 60);
+		const direction = moveDirection.mul(this.SPEED);
 		const origin = this.camera.Focus.Position;
 
 		this.attachment.WorldPosition = Vector3.yAxis.mul(0.3 + (height / 2) * 0.74);
