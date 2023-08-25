@@ -16,7 +16,7 @@ export const crystalsSlice = createProducer(initialState, {
 		...state,
 		[areaId]: {
 			...state[areaId],
-			[crystal.id]: { ...crystal, type: "Crystal" },
+			[crystal.id]: { ...crystal, areaId, originalPosition: crystal.position, type: "Crystal" },
 		},
 	}),
 
@@ -27,4 +27,22 @@ export const crystalsSlice = createProducer(initialState, {
 			[crystalId]: undefined,
 		},
 	}),
+
+	setCrystalPosition: (state, areaId: `Area${number}`, crystalId: string, position: Vector3) => {
+		const crystal = state[areaId]?.[crystalId];
+
+		return {
+			...state,
+			[areaId]: {
+				...state[areaId],
+				[crystalId]:
+					crystal !== undefined
+						? {
+								...state[areaId]?.[crystalId],
+								position,
+						  }
+						: undefined,
+			},
+		};
+	},
 });

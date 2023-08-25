@@ -10,6 +10,8 @@ import SlimeSizeController from "./SlimeSizeController";
 import Remotes from "shared/remotes";
 import { ClientSenderEvent } from "@rbxts/net/out/client/ClientEvent";
 import { CoinsController } from "./CoinsController";
+import Gizmo from "@rbxts/gizmo";
+import { WorldController } from "./WorldController";
 
 @Controller()
 export class EatController implements OnStart, OnCharacter, OnTick {
@@ -18,26 +20,18 @@ export class EatController implements OnStart, OnCharacter, OnTick {
 	private collectiblesRemotes = Remotes.Client.GetNamespace("collectibles");
 	private collectRemote?: ClientSenderEvent<[id: string]>;
 	private eatPlayerRemote?: ClientSenderEvent<[id: number]>;
-	private currentWorld?: `Area${number}` = undefined;
 
 	constructor(
 		private logger: Logger,
 		private readonly crystalsController: CrystalsController,
 		private readonly coinsController: CoinsController,
 		private readonly slimeSizeController: SlimeSizeController,
+		private readonly worldController: WorldController,
 	) {}
 
 	onStart(): void {
 		this.collectRemote = this.collectiblesRemotes.Get("collect");
 		this.eatPlayerRemote = Remotes.Client.Get("eatPlayer");
-
-		producer.subscribe(selectPlayerWorlds(tostring(this.localPlayer.UserId)), (worlds) => {
-			if (!worlds) {
-				return;
-			}
-
-			this.currentWorld = worlds.selected;
-		});
 	}
 
 	onCharacterAdd(player: Player, character: Model): void {
@@ -60,6 +54,9 @@ export class EatController implements OnStart, OnCharacter, OnTick {
 		const minimalSize = size / 1.3;
 		const isInsideBlob = distanceFromBlob !== undefined && distanceFromBlob < minimalSize;
 		const isInsidePlayer = distanceFromPlayer !== undefined && distanceFromPlayer < minimalSize;
+
+		Gizmo.line.draw(origin, origin.add(this.root.CFrame.RightVector.mul(minimalSize)));
+		Gizmo.line.draw(origin, origin.add(this.root.CFrame.LookVector.mul(-1).mul(10 + size * 2)));
 
 		if (isInsideBlob && closestBlob) {
 			this.collectRemote?.SendToServer(closestBlob.id);
@@ -106,21 +103,9 @@ export class EatController implements OnStart, OnCharacter, OnTick {
 	}
 
 	getClosestBlob(origin: Vector3) {
-		if (this.currentWorld === undefined) {
+		if (this.worldController.currentWorld === undefined) {
 			return $tuple();
 		}
-
-		// const selectCrystals = (state: RootState) => {
-		// 	return state.collectables.crystals[this.currentWorld!];
-		// };
-
-		// const selectCoins = (state: RootState) => {
-		// 	return state.collectables.coins[this.currentWorld!];
-		// };
-
-		// const selectCollectibles = createSelector(selectCrystals, selectCoins, (crystals, coins) => {
-		// 	return { ...crystals, ...coins };
-		// });
 
 		const collectables = [...this.crystalsController.crystals, ...this.coinsController.coins];
 
