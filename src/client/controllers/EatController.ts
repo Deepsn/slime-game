@@ -1,8 +1,6 @@
 import { Controller, OnStart, OnTick } from "@flamework/core";
 import { OnCharacter } from "./CharacterAddController";
 import { Players } from "@rbxts/services";
-import { producer } from "client/producers";
-import { selectPlayerWorlds } from "shared/selectors";
 import { Collectable } from "shared/slices/collectables";
 import { CrystalsController } from "./CrystalsController";
 import { Logger } from "@rbxts/log";
@@ -10,7 +8,6 @@ import SlimeSizeController from "./SlimeSizeController";
 import Remotes from "shared/remotes";
 import { ClientSenderEvent } from "@rbxts/net/out/client/ClientEvent";
 import { CoinsController } from "./CoinsController";
-import Gizmo from "@rbxts/gizmo";
 import { WorldController } from "./WorldController";
 
 @Controller()
@@ -54,9 +51,6 @@ export class EatController implements OnStart, OnCharacter, OnTick {
 		const minimalSize = size / 1.3;
 		const isInsideBlob = distanceFromBlob !== undefined && distanceFromBlob < minimalSize;
 		const isInsidePlayer = distanceFromPlayer !== undefined && distanceFromPlayer < minimalSize;
-
-		Gizmo.line.draw(origin, origin.add(this.root.CFrame.RightVector.mul(minimalSize)));
-		Gizmo.line.draw(origin, origin.add(this.root.CFrame.LookVector.mul(-1).mul(10 + size * 2)));
 
 		if (isInsideBlob && closestBlob) {
 			this.collectRemote?.SendToServer(closestBlob.id);

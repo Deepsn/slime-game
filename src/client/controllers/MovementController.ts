@@ -4,11 +4,12 @@ import { Players, Workspace } from "@rbxts/services";
 import { Logger } from "@rbxts/log";
 import SlimeSizeController from "./SlimeSizeController";
 import { InputController } from "./InputController";
-import Gizmo from "@rbxts/gizmo";
+import { producer } from "client/producers";
+import { selectPlayerUpgrades } from "shared/selectors";
 
 @Controller()
 export default class MovementController implements OnRender, OnStart, OnCharacter {
-	private readonly SPEED = 16;
+	private SPEED = 10;
 	private attachment?: Attachment;
 	private alignOrientation?: AlignOrientation;
 	private linearVelocity?: LinearVelocity;
@@ -25,6 +26,14 @@ export default class MovementController implements OnRender, OnStart, OnCharacte
 	onStart(): void {
 		const characterFolder = Workspace.WaitForChild("Characters") as Folder;
 		this.raycastParams.FilterDescendantsInstances = [characterFolder];
+
+		producer.subscribe(selectPlayerUpgrades(tostring(this.localPlayer.UserId)), (upgrades) => {
+			if (!upgrades) {
+				return;
+			}
+
+			this.SPEED = 10 + upgrades.speed;
+		});
 	}
 
 	onCharacterAdd(player: Player, character: Model): void {
@@ -91,8 +100,6 @@ export default class MovementController implements OnRender, OnStart, OnCharacte
 		this.attachment.WorldPosition = Vector3.yAxis.mul(0.3 + (height / 2) * 0.74);
 
 		this.linearVelocity.VectorVelocity = direction;
-
-		Gizmo.arrow.draw(origin, origin.add(direction));
 
 		if (moveDirection.Magnitude > 0) {
 			this.alignOrientation.CFrame = new CFrame(origin, origin.add(direction.Cross(Vector3.yAxis)));
