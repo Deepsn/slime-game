@@ -4,6 +4,7 @@ import { Players, Workspace } from "@rbxts/services";
 import { Logger } from "@rbxts/log";
 import SlimeSizeController from "./SlimeSizeController";
 import { InputController } from "./InputController";
+import Gizmo from "@rbxts/gizmo";
 
 @Controller()
 export default class MovementController implements OnRender, OnStart, OnCharacter {
@@ -89,6 +90,8 @@ export default class MovementController implements OnRender, OnStart, OnCharacte
 		this.attachment.WorldPosition = Vector3.yAxis.mul(0.3 + (height / 2) * 0.74);
 
 		this.linearVelocity.VectorVelocity = direction;
+
+		Gizmo.arrow.draw(origin, origin.add(direction));
 
 		if (moveDirection.Magnitude > 0) {
 			this.alignOrientation.CFrame = new CFrame(origin, origin.add(direction.Cross(Vector3.yAxis)));
