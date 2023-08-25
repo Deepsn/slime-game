@@ -20,7 +20,7 @@ export class ExperienceService implements OnPlayer {
 					stats.maxExperience + stats.maxExperience / 2,
 				);
 				producer.changeStats(tostring(player.UserId), "level", 1);
-				producer.setStats(tostring(player.UserId), "experience", 0);
+				producer.setStats(tostring(player.UserId), "experience", stats.experience - stats.maxExperience);
 
 				const slimeStats = producer.getState(selectPlayerSlime(tostring(player.UserId)));
 
