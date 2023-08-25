@@ -96,6 +96,7 @@ export class CrystalsSpawnerService implements OnStart, OnTick {
 			id: HttpService.GenerateGUID(false),
 			color: randomCrystal.Name,
 			position,
+			areaId: `Area${areaId}`,
 			value: this.getValueFromCrystal(randomCrystal, areaId),
 		};
 

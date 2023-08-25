@@ -38,6 +38,12 @@ export class CrystalsController implements OnStart {
 			});
 		};
 
+		const selectCrystal = (areaId: `Area${number}`, crystalId: string) => {
+			return createSelector(selectCrystalsInArea(areaId), (crystals) => {
+				return crystals?.[crystalId];
+			});
+		};
+
 		producer.subscribe(selectCurrentWorld(tostring(localPlayer.UserId)), (area) => {
 			if (area === undefined) {
 				return;
@@ -63,6 +69,16 @@ export class CrystalsController implements OnStart {
 					}
 				};
 
+				const unsubscribe = producer.subscribe(selectCrystal(area, crystal.id), (crystal) => {
+					if (crystal === undefined) {
+						return;
+					}
+
+					if (crystalInstance) {
+						crystalInstance.PivotTo(new CFrame(crystal.position));
+					}
+				});
+
 				if (crystalInstance) {
 					removeCollider(crystalInstance);
 					crystalInstance.Name = crystal.id;
@@ -73,6 +89,7 @@ export class CrystalsController implements OnStart {
 				}
 
 				return () => {
+					unsubscribe();
 					crystalInstance?.Destroy();
 					this.crystals = this.crystals.filter((crystalObject) => crystalObject !== crystal);
 				};

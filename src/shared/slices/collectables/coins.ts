@@ -2,7 +2,7 @@ import { createProducer } from "@rbxts/reflex";
 import { Coin } from "./types";
 
 export interface CoinsState {
-	readonly [areaId: string]:
+	readonly [areaId: `Area${number}`]:
 		| {
 				readonly [coinId: string]: Coin | undefined;
 		  }
@@ -12,15 +12,15 @@ export interface CoinsState {
 const initialState: CoinsState = {};
 
 export const coinsSlice = createProducer(initialState, {
-	addCoin: (state, areaId: string, coin: Coin) => ({
+	addCoin: (state, areaId: `Area${number}`, coin: Coin) => ({
 		...state,
 		[areaId]: {
 			...state[areaId],
-			[coin.id]: { ...coin, type: "Coin" },
+			[coin.id]: { ...coin, areaId, originalPosition: coin.position, type: "Coin" },
 		},
 	}),
 
-	removeCoin: (state, areaId: string, coinId: string) => ({
+	removeCoin: (state, areaId: `Area${number}`, coinId: string) => ({
 		...state,
 		[areaId]: {
 			...state[areaId],

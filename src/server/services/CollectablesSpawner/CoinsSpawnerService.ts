@@ -41,6 +41,7 @@ export class CoinsSpawnerService implements OnStart, OnTick {
 		const coin: Coin = {
 			id: HttpService.GenerateGUID(false),
 			position,
+			areaId: `Area${areaId}`,
 			value: 1,
 		};
 
