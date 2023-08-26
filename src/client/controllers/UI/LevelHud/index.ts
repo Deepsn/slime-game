@@ -1,4 +1,4 @@
-import { Controller, OnStart } from "@flamework/core";
+import { Controller } from "@flamework/core";
 import { UIClass } from "../UIClass";
 import { LevelHudFrame } from "./types";
 import { producer } from "client/producers";
@@ -6,9 +6,7 @@ import { selectPlayerStats } from "shared/selectors";
 import { TweenService } from "@rbxts/services";
 
 @Controller()
-export class Index extends UIClass<LevelHudFrame> implements OnStart {
-	private tweenInfo = new TweenInfo(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out);
-
+export class LevelHud extends UIClass<LevelHudFrame> {
 	constructor() {
 		super("UILevelHud");
 	}
