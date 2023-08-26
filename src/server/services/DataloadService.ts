@@ -6,12 +6,12 @@ import { OnPlayer } from "./PlayerJoinService";
 import { Logger } from "@rbxts/log";
 import { producer } from "server/producers";
 import { selectPlayerData } from "shared/selectors";
-import { Janitor } from "@rbxts/janitor";
+import { Players } from "@rbxts/services";
 
 @Service()
 export class DataLoadService implements OnStart, OnPlayer {
 	private profileStore?: ProfileStore<PlayerData>;
-	private profiles = new Map<Player, [Janitor, Profile<PlayerData>]>();
+	private profiles = new Map<Player, Profile<PlayerData>>();
 
 	constructor(private logger: Logger) {}
 
@@ -36,8 +36,8 @@ export class DataLoadService implements OnStart, OnPlayer {
 		this.logger.Info("{player}'s profile loaded in {time}s", player.Name, rounded_time);
 
 		if (profile !== undefined) {
-			const janitor = new Janitor();
-
+			profile.AddUserId(player.UserId);
+			profile.Reconcile();
 			this.logger.Debug("{player} data: {@data}", player.Name, profile.Data);
 
 			const unsubscribe = producer.subscribe(selectPlayerData(tostring(player.UserId)), (data) => {
@@ -46,31 +46,33 @@ export class DataLoadService implements OnStart, OnPlayer {
 				}
 			});
 
-			janitor.Add(unsubscribe);
+			profile.ListenToRelease(() => {
+				unsubscribe();
+				this.logger.Info("{player}'s profile has been released, {data}", player.Name, profile.Data);
+				this.profiles.delete(player);
+				player.Kick();
+			});
 
-			producer.loadPlayerData(tostring(player.UserId), profile.Data);
+			if (player.IsDescendantOf(Players)) {
+				producer.loadPlayerData(tostring(player.UserId), profile.Data);
 
-			producer.setSlimeStat(tostring(player.UserId), "size", 1);
-			producer.setStats(tostring(player.UserId), "level", defaultPlayerData.stats.level);
-			producer.setStats(tostring(player.UserId), "experience", defaultPlayerData.stats.experience);
-			producer.setStats(tostring(player.UserId), "maxExperience", defaultPlayerData.stats.maxExperience);
+				producer.setSlimeStat(tostring(player.UserId), "size", 1);
+				producer.setStats(tostring(player.UserId), "level", defaultPlayerData.stats.level);
+				producer.setStats(tostring(player.UserId), "experience", defaultPlayerData.stats.experience);
+				producer.setStats(tostring(player.UserId), "maxExperience", defaultPlayerData.stats.maxExperience);
 
-			this.profiles.set(player, [janitor, profile]);
+				this.profiles.set(player, profile);
+			} else {
+				profile.Release();
+			}
 		} else {
 			player.Kick();
 		}
 	}
 
 	onPlayerLeave(player: Player): void {
-		const profileObject = this.profiles.get(player);
+		const profile = this.profiles.get(player);
 
-		if (profileObject) {
-			const [janitor, profile] = profileObject;
-
-			profile.Release();
-			janitor.Destroy();
-			this.logger.Info("{player}'s profile has been released", player.Name);
-			this.profiles.delete(player);
-		}
+		profile?.Release();
 	}
 }
