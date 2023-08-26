@@ -2,13 +2,14 @@ import { Controller, OnStart } from "@flamework/core";
 import { UIClass } from "../UIClass";
 import { UpgradeFrame } from "./types";
 import { TweenService } from "@rbxts/services";
+import { UIController } from "../UIController";
 
 @Controller()
 export class Upgrade extends UIClass<UpgradeFrame> {
 	private inTween?: Tween;
 	private outTween?: Tween;
 
-	constructor() {
+	constructor(private readonly uicontroller: UIController) {
 		super("UIUpgrade");
 	}
 
@@ -25,6 +26,8 @@ export class Upgrade extends UIClass<UpgradeFrame> {
 
 		this.instance.Position = offscreenPosition;
 		this.instance.Visible = true;
+
+		this.instance.CloseButton.MouseButton1Click.Connect(() => this.uicontroller.changeInterface());
 	}
 
 	activate(): void {
