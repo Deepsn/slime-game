@@ -105,7 +105,7 @@ export class EatService implements OnStart {
 			}
 
 			// size check
-			if (targetSize > playerSize) {
+			if (targetSize >= playerSize) {
 				return;
 			}
 
