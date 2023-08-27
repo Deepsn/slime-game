@@ -26,7 +26,7 @@ export class Boost extends UIClass<BoostFrame> implements OnRender {
 		}
 
 		const fuel = this.boostController.fuel;
-		const maxFuel = this.boostController.BASE_FUEL;
+		const maxFuel = this.boostController.MAX_FUEL;
 		const fuelFrame = this.instance.Fuel;
 		const isBoostEnabled = this.boostController.enabled;
 		const isFuelChanged = this.lastFuel !== fuel;

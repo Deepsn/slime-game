@@ -1,6 +1,9 @@
 import { Controller, OnRender, OnStart } from "@flamework/core";
-import { UserInputService } from "@rbxts/services";
+import { Players, UserInputService } from "@rbxts/services";
 import CameraController from "./CameraController";
+import { createSelector } from "@rbxts/reflex";
+import { selectPlayerUpgrades } from "shared/selectors";
+import { producer } from "client/producers";
 
 function lerp(a: number, b: number, t: number) {
 	return a + (b - a) * t;
@@ -8,18 +11,21 @@ function lerp(a: number, b: number, t: number) {
 
 @Controller()
 export class BoostController implements OnStart, OnRender {
-	public readonly BASE_FUEL = 3; // seconds
+	public MAX_FUEL = 0;
 	public enabled = false;
 	public fuel = 0;
 
+	private readonly BASE_FUEL = 3; // seconds
 	private readonly CAMERA_SPEED = 10;
 	private holding = false;
 	private lastEnabled = tick();
+	private localPlayer = Players.LocalPlayer;
 
 	constructor(private readonly cameraController: CameraController) {}
 
 	onStart(): void {
 		this.fuel = this.BASE_FUEL;
+		this.MAX_FUEL = this.BASE_FUEL;
 
 		UserInputService.InputBegan.Connect((input, gameProcessed) => {
 			if (gameProcessed) {
@@ -36,6 +42,21 @@ export class BoostController implements OnStart, OnRender {
 				this.holding = false;
 			}
 		});
+
+		const selectPlayerBoostUpgrade = (playerId: string) => {
+			return createSelector(selectPlayerUpgrades(playerId), (upgrades) => {
+				return upgrades?.booster;
+			});
+		};
+
+		producer.subscribe(selectPlayerBoostUpgrade(tostring(this.localPlayer.UserId)), (upgrade) => {
+			if (upgrade === undefined) {
+				return;
+			}
+
+			// add 30% with the base fuel to the max fuel
+			this.MAX_FUEL = this.BASE_FUEL * (1 + 0.3 * upgrade);
+		});
 	}
 
 	onRender(dt: number): void {
@@ -47,8 +68,8 @@ export class BoostController implements OnStart, OnRender {
 			this.fuel -= dt;
 			this.enabled = true;
 		} else {
-			if (!this.holding && this.fuel < this.BASE_FUEL && tick() - this.lastEnabled > 1) {
-				this.fuel = math.min(this.fuel + dt, this.BASE_FUEL);
+			if (!this.holding && this.fuel < this.MAX_FUEL && tick() - this.lastEnabled > 1) {
+				this.fuel = math.min(this.fuel + dt, this.MAX_FUEL);
 			}
 
 			if (this.enabled) {
