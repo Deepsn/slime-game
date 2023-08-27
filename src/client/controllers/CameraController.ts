@@ -4,7 +4,7 @@ import { Players, Workspace } from "@rbxts/services";
 
 @Controller()
 export default class CameraController implements OnCharacter {
-	private camera = Workspace.CurrentCamera!;
+	public camera = Workspace.CurrentCamera!;
 
 	onCharacterAdd(player: Player, character: Model): void {
 		if (player !== Players.LocalPlayer) {

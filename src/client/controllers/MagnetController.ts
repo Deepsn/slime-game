@@ -1,4 +1,4 @@
-import { Controller, OnStart, OnTick } from "@flamework/core";
+import { Controller, OnRender, OnStart } from "@flamework/core";
 import { OnCharacter } from "./CharacterAddController";
 import { Players } from "@rbxts/services";
 import { CrystalsController } from "./CrystalsController";
@@ -10,7 +10,7 @@ import { Collectable } from "shared/slices/collectables";
 import { Logger } from "@rbxts/log";
 
 @Controller()
-export class MagnetController implements OnStart, OnTick, OnCharacter {
+export class MagnetController implements OnStart, OnRender, OnCharacter {
 	public currentCollectible?: Collectable = undefined;
 
 	private readonly MAGNET_FORCE = 10;
@@ -36,7 +36,7 @@ export class MagnetController implements OnStart, OnTick, OnCharacter {
 		this.root = character.WaitForChild("Root") as Part;
 	}
 
-	onTick(dt: number): void {
+	onRender(dt: number): void {
 		if (!this.root) {
 			return;
 		}

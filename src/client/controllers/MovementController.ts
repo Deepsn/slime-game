@@ -7,6 +7,7 @@ import { InputController } from "./InputController";
 import { producer } from "client/producers";
 import { selectPlayerUpgrades } from "shared/selectors";
 import { createSelector } from "@rbxts/reflex";
+import { BoostController } from "./BoostController";
 
 @Controller()
 export default class MovementController implements OnRender, OnStart, OnCharacter {
@@ -23,6 +24,7 @@ export default class MovementController implements OnRender, OnStart, OnCharacte
 		private logger: Logger,
 		private readonly slimeSizeController: SlimeSizeController,
 		private readonly inputController: InputController,
+		private readonly boostController: BoostController,
 	) {}
 
 	onStart(): void {
@@ -101,9 +103,10 @@ export default class MovementController implements OnRender, OnStart, OnCharacte
 			return;
 		}
 
+		const isBoostEnabled = this.boostController.enabled;
 		const height = this.slimeSizeController.sizes.get(this.localPlayer.UserId) ?? 0;
 		const moveDirection = this.getMoveDirection();
-		const direction = moveDirection.mul(this.SPEED);
+		const direction = moveDirection.mul(this.SPEED + (isBoostEnabled ? this.SPEED / 2 : 0));
 		const origin = this.camera.Focus.Position;
 
 		this.attachment.WorldPosition = Vector3.yAxis.mul(0.3 + (height / 2) * 0.74);
