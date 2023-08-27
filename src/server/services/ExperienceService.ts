@@ -2,13 +2,28 @@ import { Service } from "@flamework/core";
 import { producer } from "server/producers";
 import { OnPlayer } from "./PlayerJoinService";
 import { selectPlayerSlime, selectPlayerStats } from "shared/selectors";
+import { createSelector } from "@rbxts/reflex";
 
 @Service()
 export class ExperienceService implements OnPlayer {
 	private playerSubscriptions = new Map<Player, () => void>();
 
 	onPlayerJoin(player: Player): void {
-		const unsubscribe = producer.subscribe(selectPlayerStats(tostring(player.UserId)), (stats, lastStats) => {
+		const selectPlayerLevels = (playerId: string) => {
+			return createSelector(selectPlayerStats(playerId), (stats) => {
+				if (!stats) {
+					return;
+				}
+
+				return {
+					experience: stats.experience,
+					maxExperience: stats.maxExperience,
+					level: stats.level,
+				};
+			});
+		};
+
+		const unsubscribe = producer.subscribe(selectPlayerLevels(tostring(player.UserId)), (stats, lastStats) => {
 			if (!stats || !lastStats) {
 				return;
 			}
