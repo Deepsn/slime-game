@@ -5,6 +5,8 @@ import { Players, Workspace } from "@rbxts/services";
 import { Logger } from "@rbxts/log";
 import { OnCharacter } from "./CharacterAddService";
 import CharacterService from "./CharacterService";
+import { selectPlayerCurrentWorld } from "shared/selectors/players";
+import { WorldService } from "./WorldService";
 
 @Service()
 export class RespawnService implements OnStart, OnCharacter {
@@ -14,6 +16,7 @@ export class RespawnService implements OnStart, OnCharacter {
 	constructor(
 		private logger: Logger,
 		private readonly characterService: CharacterService,
+		private readonly worldService: WorldService,
 	) {}
 
 	onStart(): void {
@@ -33,38 +36,37 @@ export class RespawnService implements OnStart, OnCharacter {
 	}
 
 	onCharacterAdd(player: Player, character: Model): void {
-		print("connecting", character.GetFullName());
 		task.delay(0.1, () => this.spawn(player));
 
-		character.AncestryChanged.Connect((_, parent) => {
+		const connection = character.AncestryChanged.Connect((_, parent) => {
 			if (parent !== undefined || !player.Character) {
 				print("not destroying");
 				return;
 			}
 
-			print("destroying");
-
 			player.Character = undefined;
-			this.characterService.onPlayerJoin(player);
+			connection.Disconnect();
+
+			task.wait(0.2);
+
+			if (player.IsDescendantOf(Players)) {
+				this.characterService.onPlayerJoin(player);
+			}
 		});
 	}
 
 	getRespawnLocation(player: Player) {
-		const worlds = producer.getState(selectPlayerWorlds(tostring(player.UserId)));
+		const world = this.worldService.waitFor(player); //producer.getState(selectPlayerCurrentWorld(tostring(player.UserId)));
 
-		if (!worlds) {
+		if (!world || !world.selected) {
+			this.logger.Warn("Player has no world");
 			return;
 		}
 
-		const world = worlds.selected;
-
-		if (!world) {
-			return;
-		}
-
-		const worldFolder = this.worlds.get(world);
+		const worldFolder = this.worlds.get(world.selected);
 
 		if (!worldFolder) {
+			this.logger.Warn("World folder not found");
 			return;
 		}
 
@@ -126,7 +128,7 @@ export class RespawnService implements OnStart, OnCharacter {
 		const respawnLocation = location ?? this.getRespawnLocation(player);
 
 		if (!respawnLocation) {
-			task.defer(() => this.onCharacterAdd(player, character));
+			task.defer(() => this.spawn(player));
 			return;
 		}
 
