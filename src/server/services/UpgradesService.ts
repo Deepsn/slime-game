@@ -32,7 +32,7 @@ export class UpgradesService implements OnStart {
 
 			const playerCoins = producer.getState(selectPlayerCoins(tostring(player.UserId)));
 
-			if (playerCoins === undefined || playerCoins < upgradeCost) {
+			if (playerCoins === undefined) {
 				return;
 			}
 
@@ -43,6 +43,10 @@ export class UpgradesService implements OnStart {
 			}
 
 			const calculatedCost = upgradeCost + (playerUpgradeLevel > 1 ? (upgradeCost * playerUpgradeLevel) / 2 : 0);
+
+			if (playerCoins < calculatedCost) {
+				return;
+			}
 
 			producer.changeBalance(tostring(player.UserId), "coins", -calculatedCost);
 			producer.addUpgrade(tostring(player.UserId), upgradeName);
