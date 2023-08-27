@@ -8,7 +8,7 @@ function lerp(a: number, b: number, t: number) {
 
 @Controller()
 export class BoostController implements OnStart, OnRender {
-	public readonly BASE_FUEL = 100;
+	public readonly BASE_FUEL = 3; // seconds
 	public enabled = false;
 	public fuel = 0;
 
@@ -44,11 +44,11 @@ export class BoostController implements OnStart, OnRender {
 		camera.FieldOfView = lerp(camera.FieldOfView, this.enabled ? 80 : 70, dt * this.CAMERA_SPEED);
 
 		if (this.holding && this.fuel > 0) {
-			this.fuel -= dt * 10;
+			this.fuel -= dt;
 			this.enabled = true;
 		} else {
-			if (!this.holding && tick() - this.lastEnabled > 1) {
-				this.fuel += dt;
+			if (!this.holding && this.fuel < this.BASE_FUEL && tick() - this.lastEnabled > 1) {
+				this.fuel = math.min(this.fuel + dt, this.BASE_FUEL);
 			}
 
 			if (this.enabled) {
