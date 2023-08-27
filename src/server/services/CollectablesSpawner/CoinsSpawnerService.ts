@@ -6,8 +6,11 @@ import { Coin } from "shared/slices/collectables";
 
 @Service()
 export class CoinsSpawnerService implements OnStart, OnTick {
+	public spawnAmount = 0;
+
 	private readonly SPAWN_TICK = 1; // second to spawn
 	private readonly initialSpawnAmount = 50;
+	private readonly MAX_SPAWN_AMOUNT = 200;
 	private spawnTick = 0;
 	private RNG = new Random();
 
@@ -29,6 +32,10 @@ export class CoinsSpawnerService implements OnStart, OnTick {
 	}
 
 	spawn() {
+		if (this.spawnAmount >= this.MAX_SPAWN_AMOUNT) {
+			return;
+		}
+
 		const areaId = this.RNG.NextInteger(1, 5);
 		const coinObject = ReplicatedStorage.Crystals.Coin;
 		const position = this.crystalsSpawnerService.getSpawnLocation(areaId, coinObject);
@@ -45,6 +52,7 @@ export class CoinsSpawnerService implements OnStart, OnTick {
 			value: 1,
 		};
 
+		this.spawnAmount++;
 		producer.addCoin(`Area${areaId}`, coin);
 	}
 }

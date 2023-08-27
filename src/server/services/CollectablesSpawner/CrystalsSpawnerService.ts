@@ -7,8 +7,11 @@ import { t } from "@rbxts/t";
 
 @Service()
 export class CrystalsSpawnerService implements OnStart, OnTick {
+	public spawnAmount = 0;
+
 	private readonly SPAWN_TICK = 1; // second to spawn
 	private readonly initialSpawnAmount = 150;
+	private readonly MAX_SPAWN_AMOUNT = 200;
 	private crystalChance: { name: string; chance: number }[] = [];
 	private spawnTick = 0;
 	private totalSpawnChance = 0;
@@ -77,6 +80,10 @@ export class CrystalsSpawnerService implements OnStart, OnTick {
 	}
 
 	spawn() {
+		if (this.spawnAmount >= this.MAX_SPAWN_AMOUNT) {
+			return;
+		}
+
 		const areaId = this.RNG.NextInteger(1, 5);
 		const randomCrystal = this.getRandomCrystal();
 
@@ -100,6 +107,7 @@ export class CrystalsSpawnerService implements OnStart, OnTick {
 			value: this.getValueFromCrystal(randomCrystal, areaId),
 		};
 
+		this.spawnAmount++;
 		producer.addCrystal(`Area${areaId}`, crystal);
 	}
 }

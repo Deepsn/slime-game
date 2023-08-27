@@ -7,12 +7,16 @@ import Remotes from "shared/remotes";
 import { selectPlayerSlime, selectPlayerStats, selectPlayerWorlds } from "shared/selectors";
 import { RespawnService } from "./RespawnService";
 import { defaultPlayerData } from "shared/slices/players";
+import { CoinsSpawnerService } from "./CollectablesSpawner/CoinsSpawnerService";
+import { CrystalsSpawnerService } from "./CollectablesSpawner/CrystalsSpawnerService";
 
 @Service()
 export class EatService implements OnStart {
 	constructor(
 		private logger: Logger,
 		private readonly respawnService: RespawnService,
+		private readonly coinsSpawnerService: CoinsSpawnerService,
+		private readonly crystalsSpawnerService: CrystalsSpawnerService,
 	) {}
 
 	onStart() {
@@ -55,9 +59,11 @@ export class EatService implements OnStart {
 			}
 
 			if (collectible.type === "Crystal") {
+				this.crystalsSpawnerService.spawnAmount--;
 				producer.removeCrystal(areaId, collectibleId);
 				producer.changeStats(tostring(player.UserId), "experience", collectible.value);
 			} else if (collectible.type === "Coin") {
+				this.coinsSpawnerService.spawnAmount--;
 				producer.removeCoin(areaId, collectibleId);
 				producer.changeBalance(tostring(player.UserId), "coins", collectible.value);
 			}
