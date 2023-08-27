@@ -26,7 +26,7 @@ export interface PlayerStats {
 
 export interface PlayerWorlds {
 	readonly unlocked: string[];
-	selected: `Area${number}`;
+	selected: `Area${number}` | undefined;
 }
 
 export interface PlayerUpgrades {

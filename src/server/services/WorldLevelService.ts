@@ -44,7 +44,6 @@ export class WorldLevelService implements OnPlayer {
 				}
 
 				if (currentWorld) {
-					print("setting selected world", currentWorld);
 					producer.setSelectedWorld(tostring(player.UserId), currentWorld);
 				}
 			}
@@ -57,7 +56,7 @@ export class WorldLevelService implements OnPlayer {
 
 			const worlds = producer.getState(selectPlayerWorlds(tostring(player.UserId)));
 
-			if (!worlds) {
+			if (!worlds || !worlds.selected) {
 				return;
 			}
 
@@ -76,7 +75,9 @@ export class WorldLevelService implements OnPlayer {
 
 			if (level >= nextWorldMinLevel) {
 				producer.addWorld(tostring(player.UserId), `Area${nextWorldId}`);
-				producer.setSelectedWorld(tostring(player.UserId), `Area${nextWorldId}`);
+				producer.setSelectedWorld(tostring(player.UserId), undefined);
+
+				task.delay(2, () => producer.setSelectedWorld(tostring(player.UserId), `Area${nextWorldId}`));
 			}
 		});
 

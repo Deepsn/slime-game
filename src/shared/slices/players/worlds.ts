@@ -48,21 +48,19 @@ export const worldsSlice = createProducer(initialState, {
 		};
 	},
 
-	setSelectedWorld: (state, player: string, worldName: `Area${number}`) => {
+	setSelectedWorld: (state, player: string, worldName: `Area${number}` | undefined) => {
 		const worlds = state[player];
-		const hasWorld = worlds?.unlocked.includes(worldName);
+		const hasWorld = worldName !== undefined ? worlds?.unlocked.includes(worldName) : true;
 
 		return {
 			...state,
 			[player]:
 				worlds !== undefined
-					? hasWorld
-						? {
-								unlocked: worlds.unlocked,
-								selected: worldName,
-						  }
-						: worlds
-					: undefined,
+					? {
+							unlocked: worlds.unlocked,
+							selected: hasWorld ? worldName : worlds.selected,
+					  }
+					: worlds,
 		};
 	},
 });

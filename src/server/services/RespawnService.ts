@@ -57,6 +57,11 @@ export class RespawnService implements OnStart, OnCharacter {
 		}
 
 		const world = worlds.selected;
+
+		if (!world) {
+			return;
+		}
+
 		const worldFolder = this.worlds.get(world);
 
 		if (!worldFolder) {
