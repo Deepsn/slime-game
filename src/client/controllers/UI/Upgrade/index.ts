@@ -3,6 +3,8 @@ import { UIClass } from "../UIClass";
 import { UpgradeFrame } from "./types";
 import { TweenService } from "@rbxts/services";
 import { UIController } from "../UIController";
+import Remotes from "shared/remotes";
+import { PlayerUpgrades } from "shared/slices/players";
 
 @Controller()
 export class Upgrade extends UIClass<UpgradeFrame> {
@@ -28,6 +30,25 @@ export class Upgrade extends UIClass<UpgradeFrame> {
 		this.instance.Visible = true;
 
 		this.instance.CloseButton.MouseButton1Click.Connect(() => this.uicontroller.changeInterface());
+
+		const upgradesFrame = this.instance.UpgradeFrame.Frames;
+		const buyUpgradeRemote = Remotes.Client.Get("buyUpgrade");
+
+		for (const upgrade of upgradesFrame.GetChildren()) {
+			if (!upgrade.IsA("Frame")) {
+				continue;
+			}
+
+			const upgradeButton = upgrade.FindFirstChild("Upgrade") as TextButton;
+
+			if (!upgradeButton) {
+				continue;
+			}
+
+			upgradeButton.MouseButton1Click.Connect(() => {
+				buyUpgradeRemote.SendToServer(upgrade.Name as keyof PlayerUpgrades);
+			});
+		}
 	}
 
 	activate(): void {

@@ -1,5 +1,6 @@
 import Net from "@rbxts/net";
 import { BroadcastAction } from "@rbxts/reflex";
+import { PlayerUpgrades } from "./slices/players";
 
 const Remotes = Net.Definitions.Create({
 	dispatch: Net.Definitions.ServerToClientEvent<[actions: BroadcastAction[]]>(),
@@ -8,6 +9,7 @@ const Remotes = Net.Definitions.Create({
 		collect: Net.Definitions.ClientToServerEvent<[id: string]>(),
 	}),
 	eatPlayer: Net.Definitions.ClientToServerEvent<[id: number]>(),
+	buyUpgrade: Net.Definitions.ClientToServerEvent<[upgradeName: keyof PlayerUpgrades]>(),
 });
 
 export default Remotes;

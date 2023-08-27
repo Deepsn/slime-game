@@ -18,16 +18,31 @@ export const upgradesSlice = createProducer(initialState, {
 		[player]: undefined,
 	}),
 
-	changeUpgrade: (state, player: string, balanceType: keyof PlayerUpgrades, amount: number) => {
-		const balance = state[player];
+	addUpgrade: (state, player: string, upgrade: keyof PlayerUpgrades) => {
+		const upgrades = state[player];
 
 		return {
 			...state,
 			[player]:
-				balance !== undefined
+				upgrades !== undefined
 					? {
-							...balance,
-							[balanceType]: balance[balanceType] + amount,
+							...upgrades,
+							[upgrade]: upgrades[upgrade] + 1,
+					  }
+					: undefined,
+		};
+	},
+
+	removeUpgrade: (state, player: string, upgrade: keyof PlayerUpgrades) => {
+		const upgrades = state[player];
+
+		return {
+			...state,
+			[player]:
+				upgrades !== undefined
+					? {
+							...upgrades,
+							[upgrade]: upgrades[upgrade] - 1,
 					  }
 					: undefined,
 		};

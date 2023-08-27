@@ -2,7 +2,7 @@ import { Service, OnStart, OnTick } from "@flamework/core";
 import { HttpService, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { producer } from "server/producers";
 import { Crystal } from "shared/slices/collectables";
-import { crystalsValues } from "./utils";
+import { crystalsValues } from "server/lib/crystals";
 import { t } from "@rbxts/t";
 
 @Service()
