@@ -6,9 +6,11 @@ import SlimeSizeController from "./SlimeSizeController";
 import { InputController } from "./InputController";
 import { producer } from "client/producers";
 import { selectPlayerUpgrades } from "shared/selectors";
+import { createSelector } from "@rbxts/reflex";
 
 @Controller()
 export default class MovementController implements OnRender, OnStart, OnCharacter {
+	private readonly BASE_SPEED = 10;
 	private SPEED = 10;
 	private attachment?: Attachment;
 	private alignOrientation?: AlignOrientation;
@@ -27,12 +29,19 @@ export default class MovementController implements OnRender, OnStart, OnCharacte
 		const characterFolder = Workspace.WaitForChild("Characters") as Folder;
 		this.raycastParams.FilterDescendantsInstances = [characterFolder];
 
-		producer.subscribe(selectPlayerUpgrades(tostring(this.localPlayer.UserId)), (upgrades) => {
-			if (!upgrades) {
+		const selectPlayerSpeed = (playerId: string) => {
+			return createSelector(selectPlayerUpgrades(playerId), (upgrades) => {
+				return upgrades?.speed;
+			});
+		};
+
+		producer.subscribe(selectPlayerSpeed(tostring(this.localPlayer.UserId)), (speed) => {
+			if (speed === undefined) {
 				return;
 			}
 
-			this.SPEED = 10 + upgrades.speed;
+			// add 10% to the base speed
+			this.SPEED = this.BASE_SPEED * (1 + 0.1 * speed);
 		});
 	}
 
