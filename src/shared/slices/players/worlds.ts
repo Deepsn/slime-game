@@ -26,7 +26,7 @@ export const worldsSlice = createProducer(initialState, {
 			[player]:
 				worlds !== undefined
 					? {
-							unlocked: [...worlds.selected, world],
+							unlocked: [...worlds.unlocked, world],
 							selected: worlds.selected,
 					  }
 					: undefined,

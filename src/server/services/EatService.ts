@@ -27,7 +27,7 @@ export class EatService implements OnStart {
 		collect.Connect((player, collectibleId) => {
 			const areaId = this.getPlayerArea(player);
 
-			if (areaId === undefined) {
+			if (!areaId) {
 				return;
 			}
 
@@ -39,7 +39,7 @@ export class EatService implements OnStart {
 
 			const playerSize = producer.getState(selectPlayerSlime(tostring(player.UserId)))?.size;
 
-			if (playerSize === undefined) {
+			if (!playerSize) {
 				return;
 			}
 
@@ -94,13 +94,13 @@ export class EatService implements OnStart {
 
 			const targetSize = producer.getState(selectPlayerSlime(tostring(target.UserId)))?.size;
 
-			if (targetSize === undefined) {
+			if (!targetSize) {
 				return;
 			}
 
 			const playerSize = producer.getState(selectPlayerSlime(tostring(player.UserId)))?.size;
 
-			if (playerSize === undefined) {
+			if (!playerSize) {
 				return;
 			}
 
@@ -122,7 +122,7 @@ export class EatService implements OnStart {
 
 			const inForceField = producer.getState(selectPlayerStats(tostring(target.UserId)))?.forcefield;
 
-			if (inForceField || inForceField === undefined) {
+			if (inForceField || !inForceField) {
 				return;
 			}
 

@@ -20,10 +20,10 @@ export class DataLoadService implements OnStart, OnPlayer {
 	}
 
 	onPlayerJoin(player: Player): void {
-		if (this.profileStore === undefined) {
+		if (!this.profileStore) {
 			this.logger.Warn("Profile store hasn't loaded yet, waiting");
 
-			while (this.profileStore === undefined) {
+			while (!this.profileStore) {
 				task.wait();
 			}
 		}
@@ -54,12 +54,12 @@ export class DataLoadService implements OnStart, OnPlayer {
 			});
 
 			if (player.IsDescendantOf(Players)) {
-				producer.loadPlayerData(tostring(player.UserId), profile.Data);
+				profile.Data.slime.size = 1;
+				profile.Data.stats.level = defaultPlayerData.stats.level;
+				profile.Data.stats.experience = defaultPlayerData.stats.experience;
+				profile.Data.stats.maxExperience = defaultPlayerData.stats.maxExperience;
 
-				producer.setSlimeStat(tostring(player.UserId), "size", 1);
-				producer.setStats(tostring(player.UserId), "level", defaultPlayerData.stats.level);
-				producer.setStats(tostring(player.UserId), "experience", defaultPlayerData.stats.experience);
-				producer.setStats(tostring(player.UserId), "maxExperience", defaultPlayerData.stats.maxExperience);
+				producer.loadPlayerData(tostring(player.UserId), profile.Data);
 
 				this.profiles.set(player, profile);
 			} else {

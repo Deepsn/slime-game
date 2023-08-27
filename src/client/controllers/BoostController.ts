@@ -50,7 +50,7 @@ export class BoostController implements OnStart, OnRender {
 		};
 
 		producer.subscribe(selectPlayerBoostUpgrade(tostring(this.localPlayer.UserId)), (upgrade) => {
-			if (upgrade === undefined) {
+			if (!upgrade) {
 				return;
 			}
 

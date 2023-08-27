@@ -26,19 +26,19 @@ export class UpgradesService implements OnStart {
 		buyUpgradeRemote.Connect((player, upgradeName) => {
 			const upgradeCost = upgradesCosts[upgradeName];
 
-			if (upgradeCost === undefined) {
+			if (!upgradeCost) {
 				return;
 			}
 
 			const playerCoins = producer.getState(selectPlayerCoins(tostring(player.UserId)));
 
-			if (playerCoins === undefined) {
+			if (!playerCoins) {
 				return;
 			}
 
 			const playerUpgradeLevel = producer.getState(selectPlayerUpgrade(tostring(player.UserId), upgradeName));
 
-			if (playerUpgradeLevel === undefined) {
+			if (!playerUpgradeLevel) {
 				return;
 			}
 

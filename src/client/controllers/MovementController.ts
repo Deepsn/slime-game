@@ -8,6 +8,7 @@ import { producer } from "client/producers";
 import { selectPlayerUpgrades } from "shared/selectors";
 import { createSelector } from "@rbxts/reflex";
 import { BoostController } from "./BoostController";
+import { WorldController } from "./WorldController";
 
 @Controller()
 export default class MovementController implements OnRender, OnStart, OnCharacter {
@@ -25,6 +26,7 @@ export default class MovementController implements OnRender, OnStart, OnCharacte
 		private readonly slimeSizeController: SlimeSizeController,
 		private readonly inputController: InputController,
 		private readonly boostController: BoostController,
+		private readonly worldController: WorldController,
 	) {}
 
 	onStart(): void {
@@ -38,7 +40,7 @@ export default class MovementController implements OnRender, OnStart, OnCharacte
 		};
 
 		producer.subscribe(selectPlayerSpeed(tostring(this.localPlayer.UserId)), (speed) => {
-			if (speed === undefined) {
+			if (!speed) {
 				return;
 			}
 
@@ -98,18 +100,29 @@ export default class MovementController implements OnRender, OnStart, OnCharacte
 		);
 	}
 
+	getCurrentHeight() {
+		const spawnPart = this.worldController.currentMapFolder?.FindFirstChild("Spawn") as Part | undefined;
+
+		if (!spawnPart) {
+			return 0;
+		}
+
+		return spawnPart.Position.Y;
+	}
+
 	onRender(dt: number): void {
 		if (!this.linearVelocity || !this.alignOrientation || !this.attachment) {
 			return;
 		}
 
 		const isBoostEnabled = this.boostController.enabled;
-		const height = this.slimeSizeController.sizes.get(this.localPlayer.UserId) ?? 0;
+		const size = this.slimeSizeController.sizes.get(this.localPlayer.UserId) ?? 0;
+		const height = this.getCurrentHeight();
 		const moveDirection = this.getMoveDirection();
 		const direction = moveDirection.mul(this.SPEED + (isBoostEnabled ? this.SPEED / 2 : 0));
 		const origin = this.camera.Focus.Position;
 
-		this.attachment.WorldPosition = Vector3.yAxis.mul(0.3 + (height / 2) * 0.74);
+		this.attachment.WorldPosition = Vector3.yAxis.mul(height + 0.3 + (size / 2) * 0.74);
 
 		this.linearVelocity.VectorVelocity = direction;
 

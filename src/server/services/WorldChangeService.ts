@@ -5,6 +5,7 @@ import { selectPlayerStats, selectPlayerWorlds } from "shared/selectors";
 import { producer } from "server/producers";
 import { worldsLevel } from "shared/lib/worlds";
 import { RespawnService } from "./RespawnService";
+import { selectPlayerCurrentWorld } from "shared/selectors/players";
 
 @Service()
 export class WorldChangeService implements OnPlayer {
@@ -13,14 +14,8 @@ export class WorldChangeService implements OnPlayer {
 	constructor(private readonly respawnService: RespawnService) {}
 
 	onPlayerJoin(player: Player): void {
-		const selectPlayerCurrentWorld = (playerId: string) => {
-			return createSelector(selectPlayerWorlds(playerId), (worlds) => {
-				return worlds?.selected;
-			});
-		};
-
 		const unsubscribe = producer.subscribe(selectPlayerCurrentWorld(tostring(player.UserId)), (area) => {
-			if (area === undefined) {
+			if (!area) {
 				return false;
 			}
 

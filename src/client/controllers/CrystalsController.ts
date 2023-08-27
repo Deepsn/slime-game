@@ -5,6 +5,7 @@ import { Players, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { t } from "@rbxts/t";
 import { RootState, producer } from "client/producers";
 import { selectPlayerWorlds } from "shared/selectors";
+import { selectPlayerCurrentWorld } from "shared/selectors/players";
 import { Crystal } from "shared/slices/collectables";
 
 @Controller()
@@ -26,12 +27,6 @@ export class CrystalsController implements OnStart {
 			return state.collectables.crystals;
 		};
 
-		const selectCurrentWorld = (userId: string) => {
-			return createSelector(selectPlayerWorlds(userId), (worlds) => {
-				return worlds?.selected;
-			});
-		};
-
 		const selectCrystalsInArea = (areaId: `Area${number}`) => {
 			return createSelector(selectCrystals, (crystals) => {
 				return crystals[areaId];
@@ -44,8 +39,8 @@ export class CrystalsController implements OnStart {
 			});
 		};
 
-		producer.subscribe(selectCurrentWorld(tostring(localPlayer.UserId)), (area) => {
-			if (area === undefined) {
+		producer.subscribe(selectPlayerCurrentWorld(tostring(localPlayer.UserId)), (area) => {
+			if (!area) {
 				return;
 			}
 
@@ -70,7 +65,7 @@ export class CrystalsController implements OnStart {
 				};
 
 				const unsubscribe = producer.subscribe(selectCrystal(area, crystal.id), (crystal) => {
-					if (crystal === undefined) {
+					if (!crystal) {
 						return;
 					}
 

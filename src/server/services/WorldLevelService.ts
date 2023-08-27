@@ -21,46 +21,64 @@ export class WorldLevelService implements OnPlayer {
 		};
 
 		const didLevelIncrease = (level: number | undefined, lastLevel: number | undefined) => {
-			if (level === undefined || lastLevel === undefined) {
+			if (!level || !lastLevel) {
 				return false;
 			}
 
 			return level > lastLevel;
 		};
 
-		const unsubscribe = producer.subscribe(
-			selectPlayerLevel(tostring(player.UserId)),
-			didLevelIncrease,
-			(level, lastLevel) => {
-				if (level === undefined || lastLevel === undefined) {
-					return;
+		const unsubscribe = producer.subscribe(selectPlayerLevel(tostring(player.UserId)), (level, lastLevel) => {
+			if (level !== undefined && lastLevel === undefined) {
+				let currentWorld, currentWorldLevel;
+
+				for (const [worldName, minLevel] of pairs(worldsLevel)) {
+					if (level >= minLevel) {
+						producer.addWorld(tostring(player.UserId), worldName);
+
+						if (!currentWorldLevel || minLevel > currentWorldLevel) {
+							currentWorld = worldName;
+							currentWorldLevel = minLevel;
+						}
+					}
 				}
 
-				const worlds = producer.getState(selectPlayerWorlds(tostring(player.UserId)));
-
-				if (!worlds) {
-					return;
+				if (currentWorld) {
+					print("setting selected world", currentWorld);
+					producer.setSelectedWorld(tostring(player.UserId), currentWorld);
 				}
+			}
 
-				const currentWorldId = tonumber(worlds.selected.match("%d+")[0]);
+			const increased = didLevelIncrease(level, lastLevel);
 
-				if (currentWorldId === undefined) {
-					return;
-				}
+			if (!level || !lastLevel || !increased) {
+				return;
+			}
 
-				const nextWorldId = currentWorldId + 1;
-				const nextWorldMinLevel = worldsLevel[`Area${nextWorldId}`];
+			const worlds = producer.getState(selectPlayerWorlds(tostring(player.UserId)));
 
-				if (nextWorldMinLevel === undefined) {
-					return;
-				}
+			if (!worlds) {
+				return;
+			}
 
-				if (level >= nextWorldMinLevel) {
-					producer.addWorld(tostring(player.UserId), `Area${nextWorldId}`);
-					producer.setSelectedWorld(tostring(player.UserId), `Area${nextWorldId}`);
-				}
-			},
-		);
+			const currentWorldId = tonumber(worlds.selected.match("%d+")[0]);
+
+			if (!currentWorldId) {
+				return;
+			}
+
+			const nextWorldId = currentWorldId + 1;
+			const nextWorldMinLevel = worldsLevel[`Area${nextWorldId}`];
+
+			if (!nextWorldMinLevel) {
+				return;
+			}
+
+			if (level >= nextWorldMinLevel) {
+				producer.addWorld(tostring(player.UserId), `Area${nextWorldId}`);
+				producer.setSelectedWorld(tostring(player.UserId), `Area${nextWorldId}`);
+			}
+		});
 
 		this.playerSubscriptions.set(player, unsubscribe);
 	}

@@ -6,6 +6,7 @@ import { selectPlayerStats, selectPlayerWorlds } from "shared/selectors";
 import { TweenService } from "@rbxts/services";
 import { createSelector } from "@rbxts/reflex";
 import { worldsLevel } from "shared/lib/worlds";
+import { selectPlayerCurrentWorld } from "shared/selectors/players";
 
 @Controller()
 export class LevelHud extends UIClass<LevelHudFrame> {
@@ -14,12 +15,6 @@ export class LevelHud extends UIClass<LevelHudFrame> {
 	}
 
 	onStart() {
-		const selectPlayerCurrentWorld = (playerId: string) => {
-			return createSelector(selectPlayerWorlds(playerId), (worlds) => {
-				return worlds?.selected;
-			});
-		};
-
 		producer.subscribe(selectPlayerStats(tostring(this.localPlayer.UserId)), (stats) => {
 			if (!stats) {
 				return;
@@ -33,19 +28,19 @@ export class LevelHud extends UIClass<LevelHudFrame> {
 		});
 
 		producer.subscribe(selectPlayerCurrentWorld(tostring(this.localPlayer.UserId)), (area) => {
-			if (area === undefined) {
+			if (!area) {
 				return;
 			}
 
 			const currentWorldId = tonumber(area.match("%d")[0]);
 
-			if (currentWorldId === undefined) {
+			if (!currentWorldId) {
 				return;
 			}
 
 			const nextWorldLevel = worldsLevel[`Area${currentWorldId + 1}`];
 
-			if (nextWorldLevel === undefined) {
+			if (!nextWorldLevel) {
 				this.instance.Level.Title.Visible = false;
 				return;
 			}

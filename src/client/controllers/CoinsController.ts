@@ -39,7 +39,7 @@ export class CoinsController implements OnStart {
 		};
 
 		producer.subscribe(selectCurrentWorld(tostring(localPlayer.UserId)), (area) => {
-			if (area === undefined) {
+			if (!area) {
 				return;
 			}
 

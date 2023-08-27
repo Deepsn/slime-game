@@ -21,7 +21,7 @@ export class Transitions extends UIClass<Frame> {
 		const tweenInfo = new TweenInfo(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, false, 0);
 
 		producer.subscribe(selectPlayerSelectedWorld(tostring(this.localPlayer.UserId)), (selectedWorld) => {
-			if (selectedWorld === undefined) {
+			if (!selectedWorld) {
 				this.instance.BackgroundTransparency = 1;
 				this.instance.Visible = true;
 				TweenService.Create(this.instance, tweenInfo, {

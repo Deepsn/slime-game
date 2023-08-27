@@ -25,7 +25,7 @@ export class Popups extends UIClass<TextLabel> {
 		};
 
 		const didIncrease = (current: number | undefined, previous: number | undefined) => {
-			if (current === undefined || previous === undefined) {
+			if (!current || !previous) {
 				return false;
 			}
 
@@ -33,7 +33,7 @@ export class Popups extends UIClass<TextLabel> {
 		};
 
 		const createPopup = (points: number | undefined, lastPoints: number | undefined, typeEmoji: string) => {
-			if (points === undefined || lastPoints === undefined) {
+			if (!points || !lastPoints) {
 				return;
 			}
 

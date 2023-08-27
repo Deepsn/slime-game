@@ -83,7 +83,7 @@ export class Upgrade extends UIClass<UpgradeFrame> {
 
 				const upgradeCost = upgradesCosts[upgradeName];
 
-				if (upgradeLevel === undefined) {
+				if (!upgradeLevel) {
 					continue;
 				}
 

@@ -97,7 +97,7 @@ export class EatController implements OnStart, OnCharacter, OnTick {
 	}
 
 	getClosestBlob(origin: Vector3) {
-		if (this.worldController.currentWorld === undefined) {
+		if (!this.worldController.currentWorld) {
 			return $tuple();
 		}
 

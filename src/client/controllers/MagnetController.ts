@@ -46,7 +46,7 @@ export class MagnetController implements OnStart, OnRender, OnCharacter {
 
 		const playerArea = this.worldController.currentWorld;
 
-		if (playerArea === undefined) {
+		if (!playerArea) {
 			return;
 		}
 
@@ -71,7 +71,7 @@ export class MagnetController implements OnStart, OnRender, OnCharacter {
 	}
 
 	getClosestBlob(origin: Vector3) {
-		if (this.worldController.currentWorld === undefined) {
+		if (!this.worldController.currentWorld) {
 			return $tuple();
 		}
 
