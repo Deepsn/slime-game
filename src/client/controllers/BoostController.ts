@@ -8,10 +8,10 @@ function lerp(a: number, b: number, t: number) {
 
 @Controller()
 export class BoostController implements OnStart, OnRender {
+	public readonly BASE_FUEL = 100;
 	public enabled = false;
 	public fuel = 0;
 
-	private readonly BASE_FUEL = 100;
 	private readonly CAMERA_SPEED = 10;
 	private holding = false;
 	private lastEnabled = tick();
