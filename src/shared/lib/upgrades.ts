@@ -1,6 +1,6 @@
 import { PlayerUpgrades } from "shared/slices/players";
 
-export = {
+export const upgradesCosts = {
 	speed: 50,
 	magnet: 75,
 	xpBoost: 100,

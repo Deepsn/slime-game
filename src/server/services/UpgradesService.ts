@@ -1,6 +1,6 @@
 import { Service, OnStart } from "@flamework/core";
 import { createSelector } from "@rbxts/reflex";
-import upgrades from "server/lib/upgrades";
+import { upgradesCosts } from "shared/lib/upgrades";
 import { producer } from "server/producers";
 import Remotes from "shared/remotes";
 import { selectPlayerBalance, selectPlayerUpgrades } from "shared/selectors";
@@ -24,7 +24,7 @@ export class UpgradesService implements OnStart {
 		};
 
 		buyUpgradeRemote.Connect((player, upgradeName) => {
-			const upgradeCost = upgrades[upgradeName];
+			const upgradeCost = upgradesCosts[upgradeName];
 
 			if (upgradeCost === undefined) {
 				return;
@@ -36,13 +36,15 @@ export class UpgradesService implements OnStart {
 				return;
 			}
 
-			const playerUpgrade = producer.getState(selectPlayerUpgrade(tostring(player.UserId), upgradeName));
+			const playerUpgradeLevel = producer.getState(selectPlayerUpgrade(tostring(player.UserId), upgradeName));
 
-			if (playerUpgrade === undefined) {
+			if (playerUpgradeLevel === undefined) {
 				return;
 			}
 
-			producer.changeBalance(tostring(player.UserId), "coins", -upgradeCost);
+			const calculatedCost = upgradeCost + (playerUpgradeLevel > 1 ? (upgradeCost * playerUpgradeLevel) / 2 : 0);
+
+			producer.changeBalance(tostring(player.UserId), "coins", -calculatedCost);
 			producer.addUpgrade(tostring(player.UserId), upgradeName);
 		});
 	}
