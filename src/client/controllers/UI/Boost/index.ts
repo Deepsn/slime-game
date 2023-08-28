@@ -20,7 +20,7 @@ export class Boost extends UIClass<BoostFrame> implements OnRender {
 		this.instance.Fuel.Visible = true;
 
 		this.instance.ImageButton.MouseButton1Click.Connect(() => {
-			this.boostController.enabled = !this.boostController.enabled;
+			this.boostController.holding = !this.boostController.holding;
 		});
 	}
 

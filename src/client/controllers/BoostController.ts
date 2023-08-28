@@ -14,10 +14,10 @@ export class BoostController implements OnStart, OnRender {
 	public MAX_FUEL = 0;
 	public enabled = false;
 	public fuel = 0;
+	public holding = false;
 
 	private readonly BASE_FUEL = 3; // seconds
 	private readonly CAMERA_SPEED = 10;
-	private holding = false;
 	private lastEnabled = tick();
 	private localPlayer = Players.LocalPlayer;
 
@@ -73,6 +73,7 @@ export class BoostController implements OnStart, OnRender {
 			}
 
 			if (this.enabled) {
+				this.holding = false;
 				this.enabled = false;
 				this.lastEnabled = tick();
 			}
