@@ -8,13 +8,16 @@ import { producer } from "client/producers";
 import { WorldController } from "./WorldController";
 import { Collectable } from "shared/slices/collectables";
 import { Logger } from "@rbxts/log";
+import { createSelector } from "@rbxts/reflex";
+import { selectPlayerUpgrades } from "shared/selectors";
+import MovementController from "./MovementController";
 
 @Controller()
 export class MagnetController implements OnStart, OnRender, OnCharacter {
 	public currentCollectible?: Collectable = undefined;
 
-	private readonly MAGNET_FORCE = 10;
-	private readonly MAGNET_DISTANCE = 5;
+	private MAGNET_FORCE = 3;
+	private MAGNET_DISTANCE = 5;
 	private root?: Part;
 	private localPlayer = Players.LocalPlayer;
 
@@ -24,9 +27,25 @@ export class MagnetController implements OnStart, OnRender, OnCharacter {
 		private readonly coinsController: CoinsController,
 		private readonly slimeSizeController: SlimeSizeController,
 		private readonly worldController: WorldController,
+		private readonly movementController: MovementController,
 	) {}
 
-	onStart() {}
+	onStart() {
+		const selectMagnetUpgrade = (playerId: string) => {
+			return createSelector(selectPlayerUpgrades(playerId), (upgrades) => {
+				return upgrades?.magnet;
+			});
+		};
+
+		producer.subscribe(selectMagnetUpgrade(tostring(this.localPlayer.UserId)), (magnetLevel) => {
+			if (!magnetLevel) {
+				return;
+			}
+
+			this.MAGNET_FORCE = 3 + magnetLevel;
+			this.MAGNET_DISTANCE = 5 + magnetLevel / 2;
+		});
+	}
 
 	onCharacterAdd(player: Player, character: Model): void {
 		if (player !== this.localPlayer) {
@@ -65,7 +84,10 @@ export class MagnetController implements OnStart, OnRender, OnCharacter {
 
 		this.currentCollectible = closestBlob;
 
-		const newBlobPosition = closestBlob.position.Lerp(origin, this.MAGNET_FORCE * dt);
+		const newBlobPosition = closestBlob.position.Lerp(
+			origin.add(this.movementController.direction),
+			this.MAGNET_FORCE * dt,
+		);
 
 		producer.setCrystalPosition(playerArea, closestBlob.id, newBlobPosition);
 	}

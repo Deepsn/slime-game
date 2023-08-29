@@ -55,6 +55,7 @@ export class DataLoadService implements OnStart, OnPlayer {
 
 			if (player.IsDescendantOf(Players)) {
 				profile.Data.slime.size = 1;
+				profile.Data.balance.coins = 9e9;
 				profile.Data.stats.level = defaultPlayerData.stats.level;
 				profile.Data.stats.experience = defaultPlayerData.stats.experience;
 				profile.Data.stats.maxExperience = defaultPlayerData.stats.maxExperience;

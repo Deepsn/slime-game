@@ -33,9 +33,9 @@ export class CrystalsController implements OnStart {
 			});
 		};
 
-		const selectCrystal = (areaId: `Area${number}`, crystalId: string) => {
+		const selectCrystalPosition = (areaId: `Area${number}`, crystalId: string) => {
 			return createSelector(selectCrystalsInArea(areaId), (crystals) => {
-				return crystals?.[crystalId];
+				return crystals?.[crystalId]?.position;
 			});
 		};
 
@@ -64,13 +64,13 @@ export class CrystalsController implements OnStart {
 					}
 				};
 
-				const unsubscribe = producer.subscribe(selectCrystal(area, crystal.id), (crystal) => {
-					if (!crystal) {
+				const unsubscribe = producer.subscribe(selectCrystalPosition(area, crystal.id), (position) => {
+					if (!position) {
 						return;
 					}
 
 					if (crystalInstance) {
-						crystalInstance.PivotTo(new CFrame(crystal.position));
+						crystalInstance.PivotTo(new CFrame(position));
 					}
 				});
 

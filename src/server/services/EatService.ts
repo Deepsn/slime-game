@@ -4,7 +4,7 @@ import { createSelector } from "@rbxts/reflex";
 import { Players } from "@rbxts/services";
 import { RootState, producer } from "server/producers";
 import Remotes from "shared/remotes";
-import { selectPlayerSlime, selectPlayerStats, selectPlayerWorlds } from "shared/selectors";
+import { selectPlayerSlime, selectPlayerStats, selectPlayerUpgrades, selectPlayerWorlds } from "shared/selectors";
 import { RespawnService } from "./RespawnService";
 import { defaultPlayerData } from "shared/slices/players";
 import { CoinsSpawnerService } from "./CollectablesSpawner/CoinsSpawnerService";
@@ -50,11 +50,23 @@ export class EatService implements OnStart {
 				return;
 			}
 
+			const selectPlayerMagnetLevel = (playerId: string) => {
+				return createSelector(selectPlayerUpgrades(playerId), (upgrades) => {
+					return upgrades?.magnet;
+				});
+			};
+
 			const origin = root.Position;
 			const distance = collectible.position.sub(origin).Magnitude;
+			const magnetLevel = producer.getState(selectPlayerMagnetLevel(tostring(player.UserId))) ?? 0;
+			const maxDistance = playerSize + (5 + magnetLevel / 2) + 5;
 
-			if (distance > playerSize + 5) {
-				this.logger.Warn("Player is too far away from the collectible");
+			if (distance > maxDistance) {
+				this.logger.Warn(
+					"Player is too far away from the collectible, dist: {distance}, max: {maxDistance}",
+					distance,
+					maxDistance,
+				);
 				return;
 			}
 

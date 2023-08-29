@@ -38,7 +38,8 @@ export class UpgradesService implements OnStart {
 
 			const playerUpgradeLevel = producer.getState(selectPlayerUpgrade(tostring(player.UserId), upgradeName));
 
-			if (!playerUpgradeLevel) {
+			if (!playerUpgradeLevel || playerUpgradeLevel >= 10) {
+				producer.setUpgrade(tostring(player.UserId), upgradeName, 10);
 				return;
 			}
 

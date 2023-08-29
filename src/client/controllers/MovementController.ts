@@ -12,6 +12,8 @@ import { WorldController } from "./WorldController";
 
 @Controller()
 export default class MovementController implements OnRender, OnStart, OnCharacter {
+	public direction = Vector3.zero;
+
 	private readonly BASE_SPEED = 10;
 	private SPEED = 10;
 	private attachment?: Attachment;
@@ -121,6 +123,8 @@ export default class MovementController implements OnRender, OnStart, OnCharacte
 		const moveDirection = this.getMoveDirection();
 		const direction = moveDirection.mul(this.SPEED + (isBoostEnabled ? this.SPEED / 2 : 0));
 		const origin = this.camera.Focus.Position;
+
+		this.direction = moveDirection;
 
 		this.attachment.WorldPosition = Vector3.yAxis.mul(height + 0.3 + (size / 2) * 0.74);
 

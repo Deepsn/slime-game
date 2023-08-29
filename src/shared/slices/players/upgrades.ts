@@ -47,4 +47,19 @@ export const upgradesSlice = createProducer(initialState, {
 					: undefined,
 		};
 	},
+
+	setUpgrade: (state, player: string, upgrade: keyof PlayerUpgrades, value: number) => {
+		const upgrades = state[player];
+
+		return {
+			...state,
+			[player]:
+				upgrades !== undefined
+					? {
+							...upgrades,
+							[upgrade]: value,
+					  }
+					: undefined,
+		};
+	},
 });
