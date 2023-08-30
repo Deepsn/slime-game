@@ -5,6 +5,7 @@ import { statsSlice } from "./stats";
 import { slimeSlice } from "./slime";
 import { upgradesSlice } from "./upgrades";
 import { boostsSlice } from "./boosts";
+import { receiptsState } from "./receipts";
 
 export * from "./balance";
 export * from "./worlds";
@@ -12,6 +13,7 @@ export * from "./upgrades";
 export * from "./stats";
 export * from "./slime";
 export * from "./boosts";
+export * from "./receipts";
 export * from "./types";
 export * from "./utils";
 
@@ -22,4 +24,5 @@ export const playersSlice = combineProducers({
 	slime: slimeSlice,
 	upgrades: upgradesSlice,
 	boosts: boostsSlice,
+	receipts: receiptsState,
 });

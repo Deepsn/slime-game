@@ -1,6 +1,7 @@
 import { PlayerData } from "./types";
 
 export const defaultPlayerData: PlayerData = {
+	receipts: [],
 	stats: {
 		level: 1,
 		experience: 0,

@@ -38,6 +38,12 @@ export const selectPlayerBoosts = (playerId: string) => {
 	};
 };
 
+export const selectPlayerReceipts = (playerId: string) => {
+	return (state: SharedState) => {
+		return state.players.receipts[playerId];
+	};
+};
+
 export const selectPlayerData = (playerId: string) => {
 	return createSelector(
 		selectPlayerBalance(playerId),
@@ -46,12 +52,13 @@ export const selectPlayerData = (playerId: string) => {
 		selectPlayerSlime(playerId),
 		selectPlayerUpgrades(playerId),
 		selectPlayerBoosts(playerId),
-		(balance, worlds, stats, slime, upgrades, boosts): PlayerData | undefined => {
-			if (!balance || !worlds || !stats || !slime || !upgrades || !boosts) {
+		selectPlayerReceipts(playerId),
+		(balance, worlds, stats, slime, upgrades, boosts, receipts): PlayerData | undefined => {
+			if (!balance || !worlds || !stats || !slime || !upgrades || !boosts || !receipts) {
 				return;
 			}
 
-			return { balance, worlds, stats, slime, upgrades, boosts };
+			return { balance, worlds, stats, slime, upgrades, boosts, receipts };
 		},
 	);
 };

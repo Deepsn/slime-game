@@ -9,6 +9,7 @@ import { RespawnService } from "./RespawnService";
 import { defaultPlayerData } from "shared/slices/players";
 import { CoinsSpawnerService } from "./CollectablesSpawner/CoinsSpawnerService";
 import { CrystalsSpawnerService } from "./CollectablesSpawner/CrystalsSpawnerService";
+import { ProductsService } from "./ProductsService";
 
 @Service()
 export class EatService implements OnStart {
@@ -17,6 +18,7 @@ export class EatService implements OnStart {
 		private readonly respawnService: RespawnService,
 		private readonly coinsSpawnerService: CoinsSpawnerService,
 		private readonly crystalsSpawnerService: CrystalsSpawnerService,
+		private readonly productsService: ProductsService,
 	) {}
 
 	onStart() {
@@ -101,7 +103,10 @@ export class EatService implements OnStart {
 		if (collectible.type === "Crystal") {
 			this.crystalsSpawnerService.spawnAmount--;
 			producer.removeCrystal(areaId, collectibleId);
-			producer.changeStats(tostring(player.UserId), "experience", collectible.value);
+
+			const haveDoubleXP = this.productsService.hasBoost(player, "xp2x");
+
+			producer.changeStats(tostring(player.UserId), "experience", collectible.value * (haveDoubleXP ? 2 : 1));
 		} else if (collectible.type === "Coin") {
 			this.coinsSpawnerService.spawnAmount--;
 			producer.removeCoin(areaId, collectibleId);

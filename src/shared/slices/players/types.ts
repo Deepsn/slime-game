@@ -5,6 +5,7 @@ export interface PlayerData {
 	readonly worlds: PlayerWorlds;
 	readonly upgrades: PlayerUpgrades;
 	readonly boosts: PlayerBoosts;
+	readonly receipts: PlayerReceipts;
 }
 
 export interface PlayerBalance {
@@ -38,8 +39,15 @@ export interface PlayerUpgrades {
 	booster: number;
 }
 
-export interface PlayerBoosts {
-	magnet2x?: number;
-	coins2x?: number;
-	xp2x?: number;
+export interface PlayerBoost {
+	endTick: number; // tick to end
+	timeLeft: number; // time in milliseconds to end
 }
+
+export interface PlayerBoosts {
+	magnet2x?: PlayerBoost;
+	coins2x?: PlayerBoost;
+	xp2x?: PlayerBoost;
+}
+
+export type PlayerReceipts = string[];

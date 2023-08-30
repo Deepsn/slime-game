@@ -1,5 +1,5 @@
 import { createProducer } from "@rbxts/reflex";
-import { PlayerBoosts, PlayerData } from "./types";
+import { PlayerBoost, PlayerBoosts, PlayerData } from "./types";
 
 export interface BoostsState {
 	readonly [player: string]: PlayerBoosts | undefined;
@@ -18,7 +18,7 @@ export const boostsSlice = createProducer(initialState, {
 		[player]: undefined,
 	}),
 
-	addBoost: (state, player: string, boostType: keyof PlayerBoosts, boostExpiration: number) => {
+	setBoost: (state, player: string, boostName: keyof PlayerBoosts, boost: PlayerBoost) => {
 		const boosts = state[player];
 
 		return {
@@ -27,7 +27,22 @@ export const boostsSlice = createProducer(initialState, {
 				boosts !== undefined
 					? {
 							...boosts,
-							[boostType]: boostExpiration,
+							[boostName]: boost,
+					  }
+					: undefined,
+		};
+	},
+
+	removeBoost: (state, player: string, boostName: keyof PlayerBoosts) => {
+		const boosts = state[player];
+
+		return {
+			...state,
+			[player]:
+				boosts !== undefined
+					? {
+							...boosts,
+							[boostName]: undefined,
 					  }
 					: undefined,
 		};
