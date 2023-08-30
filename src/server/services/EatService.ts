@@ -24,133 +24,8 @@ export class EatService implements OnStart {
 		const collect = collectiblesRemotes.Get("collect");
 		const eatPlayer = Remotes.Server.Get("eatPlayer");
 
-		collect.Connect((player, collectibleId) => {
-			const areaId = this.getPlayerArea(player);
-
-			if (!areaId) {
-				return;
-			}
-
-			const collectible = this.getCollectible(areaId, collectibleId);
-
-			if (!collectible) {
-				return;
-			}
-
-			const playerSize = producer.getState(selectPlayerSlime(tostring(player.UserId)))?.size;
-
-			if (!playerSize) {
-				return;
-			}
-
-			const character = player.Character;
-			const root = character?.FindFirstChild("Root") as BasePart;
-
-			if (!root) {
-				return;
-			}
-
-			const selectPlayerMagnetLevel = (playerId: string) => {
-				return createSelector(selectPlayerUpgrades(playerId), (upgrades) => {
-					return upgrades?.magnet;
-				});
-			};
-
-			const origin = root.Position;
-			const distance = collectible.position.sub(origin).Magnitude;
-			const magnetLevel = producer.getState(selectPlayerMagnetLevel(tostring(player.UserId))) ?? 0;
-			const maxDistance = playerSize + (5 + magnetLevel / 2) + 5;
-
-			if (distance > maxDistance) {
-				this.logger.Warn(
-					"Player is too far away from the collectible, dist: {distance}, max: {maxDistance}",
-					distance,
-					maxDistance,
-				);
-				return;
-			}
-
-			if (collectible.type === "Crystal") {
-				this.crystalsSpawnerService.spawnAmount--;
-				producer.removeCrystal(areaId, collectibleId);
-				producer.changeStats(tostring(player.UserId), "experience", collectible.value);
-			} else if (collectible.type === "Coin") {
-				this.coinsSpawnerService.spawnAmount--;
-				producer.removeCoin(areaId, collectibleId);
-				producer.changeBalance(tostring(player.UserId), "coins", collectible.value);
-			}
-		});
-
-		eatPlayer.Connect((player, targetPlayerId) => {
-			const target = Players.GetPlayerByUserId(targetPlayerId);
-
-			if (!target) {
-				return;
-			}
-
-			// characters check
-
-			const targetCharacter = target.Character;
-			const targetRoot = targetCharacter?.FindFirstChild("Root") as BasePart;
-
-			if (!targetRoot) {
-				return;
-			}
-
-			const character = target.Character;
-			const root = character?.FindFirstChild("Root") as BasePart;
-
-			if (!root) {
-				return;
-			}
-
-			const targetSize = producer.getState(selectPlayerSlime(tostring(target.UserId)))?.size;
-
-			if (!targetSize) {
-				return;
-			}
-
-			const playerSize = producer.getState(selectPlayerSlime(tostring(player.UserId)))?.size;
-
-			if (!playerSize) {
-				return;
-			}
-
-			// size check
-			if (targetSize >= playerSize) {
-				return;
-			}
-
-			// distance check
-			const origin = root.Position;
-			const targetPosition = targetRoot.Position;
-
-			const distance = targetPosition.sub(origin).Magnitude;
-
-			if (distance > playerSize + 5) {
-				this.logger.Warn("Player is too far away from the target player");
-				return;
-			}
-
-			const inForceField = producer.getState(selectPlayerStats(tostring(target.UserId)))?.forcefield;
-
-			if (inForceField || !inForceField) {
-				return;
-			}
-
-			this.logger.Info("Adding {size} to {player}", targetSize, player.Name);
-
-			// eat
-			// producer.setSlimeStat(tostring(target.UserId), "size", 1);
-			producer.setStats(tostring(player.UserId), "level", defaultPlayerData.stats.level);
-			producer.setStats(tostring(player.UserId), "experience", defaultPlayerData.stats.experience);
-			producer.setStats(tostring(player.UserId), "maxExperience", defaultPlayerData.stats.maxExperience);
-
-			this.respawnService.spawn(target);
-
-			producer.changeSlimeStat(tostring(player.UserId), "size", targetSize);
-			producer.changeStats(tostring(player.UserId), "kills", 1);
-		});
+		collect.Connect((player, collectibleId) => this.eatCollectable(player, collectibleId));
+		eatPlayer.Connect((player, targetPlayerId) => this.eatPlayer(player, targetPlayerId));
 	}
 
 	getPlayerArea(player: Player) {
@@ -175,5 +50,133 @@ export class EatService implements OnStart {
 		};
 
 		return producer.getState(selectCollectible(id));
+	}
+
+	eatCollectable(player: Player, collectibleId: string) {
+		const areaId = this.getPlayerArea(player);
+
+		if (!areaId) {
+			return;
+		}
+
+		const collectible = this.getCollectible(areaId, collectibleId);
+
+		if (!collectible) {
+			return;
+		}
+
+		const playerSize = producer.getState(selectPlayerSlime(tostring(player.UserId)))?.size;
+
+		if (!playerSize) {
+			return;
+		}
+
+		const character = player.Character;
+		const root = character?.FindFirstChild("Root") as BasePart;
+
+		if (!root) {
+			return;
+		}
+
+		const selectPlayerMagnetLevel = (playerId: string) => {
+			return createSelector(selectPlayerUpgrades(playerId), (upgrades) => {
+				return upgrades?.magnet;
+			});
+		};
+
+		const origin = root.Position;
+		const distance = collectible.position.sub(origin).Magnitude;
+		const magnetLevel = producer.getState(selectPlayerMagnetLevel(tostring(player.UserId))) ?? 0;
+		const maxDistance = playerSize + (5 + magnetLevel / 2) + 5;
+
+		if (distance > maxDistance) {
+			this.logger.Warn(
+				"Player is too far away from the collectible, dist: {distance}, max: {maxDistance}",
+				distance,
+				maxDistance,
+			);
+			return;
+		}
+
+		if (collectible.type === "Crystal") {
+			this.crystalsSpawnerService.spawnAmount--;
+			producer.removeCrystal(areaId, collectibleId);
+			producer.changeStats(tostring(player.UserId), "experience", collectible.value);
+		} else if (collectible.type === "Coin") {
+			this.coinsSpawnerService.spawnAmount--;
+			producer.removeCoin(areaId, collectibleId);
+			producer.changeBalance(tostring(player.UserId), "coins", collectible.value);
+		}
+	}
+
+	eatPlayer(player: Player, targetPlayerId: number) {
+		const target = Players.GetPlayerByUserId(targetPlayerId);
+
+		if (!target) {
+			return;
+		}
+
+		// characters check
+
+		const targetCharacter = target.Character;
+		const targetRoot = targetCharacter?.FindFirstChild("Root") as BasePart;
+
+		if (!targetRoot) {
+			return;
+		}
+
+		const character = target.Character;
+		const root = character?.FindFirstChild("Root") as BasePart;
+
+		if (!root) {
+			return;
+		}
+
+		const targetSize = producer.getState(selectPlayerSlime(tostring(target.UserId)))?.size;
+
+		if (!targetSize) {
+			return;
+		}
+
+		const playerSize = producer.getState(selectPlayerSlime(tostring(player.UserId)))?.size;
+
+		if (!playerSize) {
+			return;
+		}
+
+		// size check
+		if (targetSize >= playerSize) {
+			return;
+		}
+
+		// distance check
+		const origin = root.Position;
+		const targetPosition = targetRoot.Position;
+
+		const distance = targetPosition.sub(origin).Magnitude;
+
+		if (distance > playerSize + 5) {
+			this.logger.Warn("Player is too far away from the target player");
+			return;
+		}
+
+		const inForceField = producer.getState(selectPlayerStats(tostring(target.UserId)))?.forcefield;
+
+		if (inForceField || !inForceField) {
+			return;
+		}
+
+		this.logger.Info("Adding {size} to {player}", targetSize, player.Name);
+
+		// eat
+		// producer.setSlimeStat(tostring(target.UserId), "size", 1);
+		producer.setStats(tostring(player.UserId), "level", defaultPlayerData.stats.level);
+		producer.setStats(tostring(player.UserId), "experience", defaultPlayerData.stats.experience);
+		producer.setStats(tostring(player.UserId), "maxExperience", defaultPlayerData.stats.maxExperience);
+
+		this.respawnService.spawn(target);
+
+		producer.changeSlimeStat(tostring(player.UserId), "size", targetSize);
+		producer.changeStats(tostring(player.UserId), "kills", 1);
 	}
 }
