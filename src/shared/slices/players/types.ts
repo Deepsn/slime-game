@@ -4,6 +4,7 @@ export interface PlayerData {
 	readonly stats: PlayerStats;
 	readonly worlds: PlayerWorlds;
 	readonly upgrades: PlayerUpgrades;
+	readonly boosts: PlayerBoosts;
 }
 
 export interface PlayerBalance {
@@ -35,4 +36,10 @@ export interface PlayerUpgrades {
 	xpBoost: number;
 	coinBoost: number;
 	booster: number;
+}
+
+export interface PlayerBoosts {
+	magnet2x?: number;
+	coins2x?: number;
+	xp2x?: number;
 }

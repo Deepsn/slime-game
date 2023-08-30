@@ -27,4 +27,5 @@ export const defaultPlayerData: PlayerData = {
 		coinBoost: 1,
 		booster: 1,
 	},
+	boosts: {},
 };

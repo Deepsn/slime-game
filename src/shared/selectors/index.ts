@@ -32,6 +32,12 @@ export const selectPlayerUpgrades = (playerId: string) => {
 	};
 };
 
+export const selectPlayerBoosts = (playerId: string) => {
+	return (state: SharedState) => {
+		return state.players.boosts[playerId];
+	};
+};
+
 export const selectPlayerData = (playerId: string) => {
 	return createSelector(
 		selectPlayerBalance(playerId),
@@ -39,12 +45,13 @@ export const selectPlayerData = (playerId: string) => {
 		selectPlayerStats(playerId),
 		selectPlayerSlime(playerId),
 		selectPlayerUpgrades(playerId),
-		(balance, worlds, stats, slime, upgrades): PlayerData | undefined => {
-			if (!balance || !worlds || !stats || !slime || !upgrades) {
+		selectPlayerBoosts(playerId),
+		(balance, worlds, stats, slime, upgrades, boosts): PlayerData | undefined => {
+			if (!balance || !worlds || !stats || !slime || !upgrades || !boosts) {
 				return;
 			}
 
-			return { balance, worlds, stats, slime, upgrades };
+			return { balance, worlds, stats, slime, upgrades, boosts };
 		},
 	);
 };
