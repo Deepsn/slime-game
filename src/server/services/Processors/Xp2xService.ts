@@ -33,7 +33,7 @@ export class Xp2xService implements OnStart {
 
 			producer.addReceipt(tostring(receiptInfo.PlayerId), receiptInfo.PurchaseId);
 			producer.setBoost(tostring(receiptInfo.PlayerId), "xp2x", {
-				endTick: tick() + expiration,
+				endTick: DateTime.now().UnixTimestamp + expiration,
 				timeLeft: expiration,
 			});
 
