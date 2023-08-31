@@ -84,6 +84,6 @@ export class ProductsService implements OnStart, OnPlayer {
 			return false;
 		}
 
-		return boost.endTick > tick();
+		return boost.endTick > DateTime.now().UnixTimestamp;
 	}
 }

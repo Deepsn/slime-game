@@ -29,8 +29,10 @@ export class BoostService implements OnPlayer {
 				boostsActive.delete(boostName);
 			});
 
-			boostsActive.set(boostName, tick() + boost.timeLeft);
-			producer.setBoost(playerKey, boostName, { ...boost, endTick: tick() + boost.timeLeft });
+			const now = DateTime.now().UnixTimestamp;
+
+			boostsActive.set(boostName, now + boost.timeLeft);
+			producer.setBoost(playerKey, boostName, { ...boost, endTick: now + boost.timeLeft });
 		};
 
 		producer.subscribe(selectPlayerBoosts(tostring(player.UserId)), (boosts) => {
@@ -64,7 +66,7 @@ export class BoostService implements OnPlayer {
 
 		if (boostsActive) {
 			const playerKey = tostring(player.UserId);
-			const now = tick();
+			const now = DateTime.now().UnixTimestamp;
 
 			for (const [boostName, endTick] of boostsActive) {
 				if (endTick > now) {
