@@ -11,6 +11,10 @@ export class BoostsController extends UIClass<BoostsFrame> implements OnTick {
 	private updateTick = 0;
 	private xp2x = 0;
 
+	constructor() {
+		super("UIBoosts");
+	}
+
 	onStart() {
 		const selectPlayerBoost = (boostName: keyof PlayerBoosts) => {
 			return createSelector(selectPlayerBoosts(tostring(this.localPlayer.UserId)), (boosts) => {
