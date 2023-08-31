@@ -10,6 +10,8 @@ import { createSelector } from "@rbxts/reflex";
 export class BoostsController extends UIClass<BoostsFrame> implements OnTick {
 	private updateTick = 0;
 	private xp2x = 0;
+	private coins2x = 0;
+	private magnet2x = 0;
 
 	constructor() {
 		super("UIBoosts");
@@ -30,6 +32,24 @@ export class BoostsController extends UIClass<BoostsFrame> implements OnTick {
 
 			this.xp2x = boost.endTick;
 		});
+
+		producer.subscribe(selectPlayerBoost("coins2x"), (boost) => {
+			if (!boost) {
+				this.xp2x = 0;
+				return;
+			}
+
+			this.coins2x = boost.endTick;
+		});
+
+		producer.subscribe(selectPlayerBoost("magnet2x"), (boost) => {
+			if (!boost) {
+				this.xp2x = 0;
+				return;
+			}
+
+			this.magnet2x = boost.endTick;
+		});
 	}
 
 	onTick(dt: number): void {
@@ -38,12 +58,29 @@ export class BoostsController extends UIClass<BoostsFrame> implements OnTick {
 		if (this.updateTick >= 1) {
 			this.updateTick = 0;
 			const now = DateTime.now().UnixTimestamp;
+			const xpBoostFrame = this.instance.XP;
+			const coinBoostFrame = this.instance.Coin;
+			const magnetBoostFrame = this.instance.Magnet;
 
-			if (this.xp2x > 0) {
-				this.instance.XP.BoostTime.Text = `${this.xp2x - now}`;
-				this.instance.XP.Visible = true;
-			} else if (this.instance.XP.Visible) {
-				this.instance.XP.Visible = false;
+			if (this.xp2x !== 0) {
+				xpBoostFrame.BoostTime.Text = `${this.xp2x - now}`;
+				xpBoostFrame.Visible = true;
+			} else if (xpBoostFrame.Visible) {
+				xpBoostFrame.Visible = false;
+			}
+
+			if (this.coins2x !== 0) {
+				coinBoostFrame.BoostTime.Text = `${this.coins2x - now}`;
+				coinBoostFrame.Visible = true;
+			} else if (this.instance.Coin.Visible) {
+				coinBoostFrame.Visible = false;
+			}
+
+			if (this.magnet2x !== 0) {
+				magnetBoostFrame.BoostTime.Text = `${this.magnet2x - now}`;
+				magnetBoostFrame.Visible = true;
+			} else if (magnetBoostFrame.Visible) {
+				magnetBoostFrame.Visible = false;
 			}
 		}
 	}
