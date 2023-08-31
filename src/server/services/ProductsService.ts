@@ -84,6 +84,6 @@ export class ProductsService implements OnStart, OnPlayer {
 			return false;
 		}
 
-		return boost.timeLeft > tick();
+		return boost.endTick > tick();
 	}
 }
