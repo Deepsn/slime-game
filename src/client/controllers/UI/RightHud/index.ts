@@ -18,8 +18,9 @@ export class RightHud extends UIClass<RightHudFrame> {
 	}
 
 	onStart() {
-		this.instance.Evolution.MouseButton1Click.Connect(() => this.uicontroller.changeInterface(this.upgrade));
 		this.instance.DailyQuest.MouseButton1Click.Connect(() => this.uicontroller.changeInterface(this.quests));
+		this.instance.Evolution.MouseButton1Click.Connect(() => this.uicontroller.changeInterface(this.upgrade));
+		this.instance.Skins.MouseButton1Click.Connect(() => this.uicontroller.changeInterface(this.config));
 		this.instance.Config.MouseButton1Click.Connect(() => this.uicontroller.changeInterface(this.config));
 	}
 }
