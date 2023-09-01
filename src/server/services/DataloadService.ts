@@ -59,6 +59,8 @@ export class DataLoadService implements OnStart, OnPlayer {
 				profile.Data.stats.level = defaultPlayerData.stats.level;
 				profile.Data.stats.experience = defaultPlayerData.stats.experience;
 				profile.Data.stats.maxExperience = defaultPlayerData.stats.maxExperience;
+				profile.Data.worlds.selected = defaultPlayerData.worlds.selected;
+				profile.Data.worlds.unlocked = defaultPlayerData.worlds.unlocked;
 
 				producer.loadPlayerData(tostring(player.UserId), profile.Data);
 
