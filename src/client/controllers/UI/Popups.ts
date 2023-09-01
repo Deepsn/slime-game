@@ -86,7 +86,7 @@ export class Popups extends UIClass<TextLabel> {
 		);
 
 		producer.subscribe(selectPlayerCoins(tostring(this.localPlayer.UserId)), didIncrease, (coins, lastCoins) =>
-			createPopup(coins, lastCoins, "🪙"),
+			createPopup(coins, lastCoins, "💰"),
 		);
 	}
 }
