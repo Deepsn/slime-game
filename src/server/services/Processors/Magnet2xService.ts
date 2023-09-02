@@ -6,7 +6,7 @@ import { Players } from "@rbxts/services";
 import { selectPlayerReceipts } from "shared/selectors";
 
 @Service()
-export class Xp2xService implements OnStart {
+export class Magnet2xService implements OnStart {
 	private productId = ids.boosts.xp2x;
 
 	constructor(private readonly productsService: ProductsService) {}
@@ -29,11 +29,10 @@ export class Xp2xService implements OnStart {
 				return false;
 			}
 
-			// TODO: get expiration from product info
 			const expiration = 3 * 60; // seconds
 
 			producer.addReceipt(tostring(receiptInfo.PlayerId), receiptInfo.PurchaseId);
-			producer.setBoost(tostring(receiptInfo.PlayerId), "xp2x", {
+			producer.setBoost(tostring(receiptInfo.PlayerId), "magnet2x", {
 				endTick: DateTime.now().UnixTimestamp + expiration,
 				timeLeft: expiration,
 				receiptId: receiptInfo.PurchaseId,
