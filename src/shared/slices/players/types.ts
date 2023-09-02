@@ -42,6 +42,7 @@ export interface PlayerUpgrades {
 export interface PlayerBoost {
 	endTick: number; // tick to end
 	timeLeft: number; // time in milliseconds to end
+	receiptId: string;
 }
 
 export interface PlayerBoosts {

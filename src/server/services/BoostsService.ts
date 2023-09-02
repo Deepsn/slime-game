@@ -7,12 +7,12 @@ import { createSelector } from "@rbxts/reflex";
 
 @Service()
 export class BoostService implements OnPlayer {
-	private boostsActive = new Map<Player, Map<keyof PlayerBoosts, number>>();
-
 	onPlayerJoin(player: Player): void {
-		const boostsActive = new Map<keyof PlayerBoosts, number>();
+		const boostsActive = new Map<
+			keyof PlayerBoosts,
+			{ receiptId: string; cancelThread: thread; timeLeft: number }
+		>();
 		const playerKey = tostring(player.UserId);
-		this.boostsActive.set(player, boostsActive);
 
 		const removeBoost = (boostName: keyof PlayerBoosts) => {
 			producer.removeBoost(playerKey, boostName);
@@ -20,22 +20,40 @@ export class BoostService implements OnPlayer {
 		};
 
 		const setBoostActive = (boost: PlayerBoost | undefined, boostName: keyof PlayerBoosts) => {
-			if (!boost || boostsActive.has(boostName)) {
+			if (!boost) {
+				return;
+			}
+
+			const boostActive = boostsActive.get(boostName);
+
+			if (boost.receiptId === boostActive?.receiptId) {
+				return;
+			}
+
+			const now = DateTime.now().UnixTimestamp;
+
+			if (boostActive && boost.receiptId !== boostActive.receiptId) {
+				task.cancel(boostActive.cancelThread);
+
+				const timeLeft = boostActive.timeLeft + boost.timeLeft;
+
+				const cancelThread = task.delay(timeLeft, () => removeBoost(boostName));
+
+				boostsActive.set(boostName, { receiptId: boost.receiptId, cancelThread, timeLeft });
+				producer.setBoost(playerKey, boostName, { ...boost, timeLeft, endTick: now + timeLeft });
 				return;
 			}
 
 			const lastOnline = producer.getState(selectPlayerLastOnline(playerKey));
-			const now = DateTime.now().UnixTimestamp;
 
 			const estimatedTimeLeft = boost.timeLeft;
 			const calculatedTimeLeft = lastOnline ? boost.endTick - lastOnline : 9e9;
 
 			const timeLeft = calculatedTimeLeft > estimatedTimeLeft ? estimatedTimeLeft : calculatedTimeLeft;
+			const cancelThread = task.delay(timeLeft, () => removeBoost(boostName));
 
-			task.delay(timeLeft, () => removeBoost(boostName));
-
-			boostsActive.set(boostName, now + timeLeft);
-			producer.setBoost(playerKey, boostName, { timeLeft, endTick: now + timeLeft });
+			boostsActive.set(boostName, { receiptId: boost.receiptId, cancelThread, timeLeft });
+			producer.setBoost(playerKey, boostName, { ...boost, timeLeft, endTick: now + timeLeft });
 		};
 
 		const selectPlayerBoost = (boostName: keyof PlayerBoosts) => {

@@ -66,11 +66,6 @@ export class DataLoadService implements OnStart, OnPlayer {
 
 				producer.loadPlayerData(tostring(player.UserId), profile.Data);
 
-				// producer.setBoost(tostring(player.UserId), "xp2x", {
-				// 	endTick: DateTime.now().UnixTimestamp + 30,
-				// 	timeLeft: 30,
-				// });
-
 				this.profiles.set(player, profile);
 			} else {
 				profile.Release();
