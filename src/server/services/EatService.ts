@@ -4,7 +4,14 @@ import { createSelector } from "@rbxts/reflex";
 import { Players } from "@rbxts/services";
 import { RootState, producer } from "server/producers";
 import Remotes from "shared/remotes";
-import { selectPlayerSlime, selectPlayerStats, selectPlayerUpgrades, selectPlayerWorlds } from "shared/selectors";
+import {
+	selectPlayerBoost,
+	selectPlayerSlime,
+	selectPlayerStats,
+	selectPlayerUpgrade,
+	selectPlayerUpgrades,
+	selectPlayerWorlds,
+} from "shared/selectors";
 import { RespawnService } from "./RespawnService";
 import { defaultPlayerData } from "shared/slices/players";
 import { CoinsSpawnerService } from "./CollectablesSpawner/CoinsSpawnerService";
@@ -105,8 +112,14 @@ export class EatService implements OnStart {
 			producer.removeCrystal(areaId, collectibleId);
 
 			const haveDoubleXP = this.productsService.hasBoost(player, "xp2x");
+			const xpUpgradeLevel = producer.getState(selectPlayerUpgrade(tostring(player.UserId), "xpBoost")) ?? 1;
+			const xpMultiplier = 1 + xpUpgradeLevel * 0.1;
 
-			producer.changeStats(tostring(player.UserId), "experience", collectible.value * (haveDoubleXP ? 2 : 1));
+			producer.changeStats(
+				tostring(player.UserId),
+				"experience",
+				collectible.value * (haveDoubleXP ? 2 : 1) * xpMultiplier,
+			);
 		} else if (collectible.type === "Coin") {
 			this.coinsSpawnerService.spawnAmount--;
 			producer.removeCoin(areaId, collectibleId);

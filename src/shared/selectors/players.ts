@@ -1,6 +1,6 @@
 import { createSelector } from "@rbxts/reflex";
 import { SharedState } from "shared/slices";
-import { PlayerBoosts, PlayerData } from "shared/slices/players";
+import { PlayerBoosts, PlayerData, PlayerUpgrades } from "shared/slices/players";
 
 export const selectPlayerBalance = (playerId: string) => {
 	return (state: SharedState) => {
@@ -79,5 +79,11 @@ export const selectPlayerCurrentWorld = (playerId: string) => {
 export const selectPlayerBoost = (playerId: string, boostName: keyof PlayerBoosts) => {
 	return createSelector(selectPlayerBoosts(playerId), (boosts) => {
 		return boosts?.[boostName];
+	});
+};
+
+export const selectPlayerUpgrade = (playerId: string, upgradeName: keyof PlayerUpgrades) => {
+	return createSelector(selectPlayerUpgrades(playerId), (upgrades) => {
+		return upgrades?.[upgradeName];
 	});
 };
