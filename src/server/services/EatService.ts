@@ -123,7 +123,15 @@ export class EatService implements OnStart {
 		} else if (collectible.type === "Coin") {
 			this.coinsSpawnerService.spawnAmount--;
 			producer.removeCoin(areaId, collectibleId);
-			producer.changeBalance(tostring(player.UserId), "coins", collectible.value);
+
+			const haveDoubleCoins = this.productsService.hasBoost(player, "coins2x");
+			const coinsUpgradeLevel = producer.getState(selectPlayerUpgrade(tostring(player.UserId), "coinBoost")) ?? 1;
+
+			producer.changeBalance(
+				tostring(player.UserId),
+				"coins",
+				collectible.value * (haveDoubleCoins ? 2 : 1) * coinsUpgradeLevel,
+			);
 		}
 	}
 
