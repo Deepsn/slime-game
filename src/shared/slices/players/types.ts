@@ -6,6 +6,7 @@ export interface PlayerData {
 	readonly upgrades: PlayerUpgrades;
 	readonly boosts: PlayerBoosts;
 	readonly receipts: PlayerReceipts;
+	lastOnline: PlayerLastOnline;
 }
 
 export interface PlayerBalance {
@@ -15,7 +16,6 @@ export interface PlayerBalance {
 export interface PlayerSlime {
 	size: number;
 	speed: number;
-	magnet: number;
 }
 
 export interface PlayerStats {
@@ -51,3 +51,5 @@ export interface PlayerBoosts {
 }
 
 export type PlayerReceipts = string[];
+
+export type PlayerLastOnline = number;

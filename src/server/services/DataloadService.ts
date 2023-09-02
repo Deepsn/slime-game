@@ -10,6 +10,8 @@ import { Players } from "@rbxts/services";
 
 @Service()
 export class DataLoadService implements OnStart, OnPlayer {
+	public hangProfiles = new Map<Player, { hang: boolean; hangBy: string | undefined }>();
+
 	private profileStore?: ProfileStore<PlayerData>;
 	private profiles = new Map<Player, Profile<PlayerData>>();
 
@@ -64,6 +66,11 @@ export class DataLoadService implements OnStart, OnPlayer {
 
 				producer.loadPlayerData(tostring(player.UserId), profile.Data);
 
+				// producer.setBoost(tostring(player.UserId), "xp2x", {
+				// 	endTick: DateTime.now().UnixTimestamp + 30,
+				// 	timeLeft: 30,
+				// });
+
 				this.profiles.set(player, profile);
 			} else {
 				profile.Release();
@@ -76,6 +83,9 @@ export class DataLoadService implements OnStart, OnPlayer {
 	onPlayerLeave(player: Player): void {
 		const profile = this.profiles.get(player);
 
-		profile?.Release();
+		if (profile) {
+			profile.Data.lastOnline = DateTime.now().UnixTimestamp;
+			profile.Release();
+		}
 	}
 }

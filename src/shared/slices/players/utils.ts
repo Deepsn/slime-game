@@ -19,7 +19,6 @@ export const defaultPlayerData: PlayerData = {
 	slime: {
 		size: 1,
 		speed: 1,
-		magnet: 0,
 	},
 	upgrades: {
 		speed: 1,
@@ -29,4 +28,5 @@ export const defaultPlayerData: PlayerData = {
 		booster: 1,
 	},
 	boosts: {},
+	lastOnline: 0,
 };

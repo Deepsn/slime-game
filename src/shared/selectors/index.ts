@@ -44,6 +44,12 @@ export const selectPlayerReceipts = (playerId: string) => {
 	};
 };
 
+export const selectPlayerLastOnline = (playerId: string) => {
+	return (state: SharedState) => {
+		return state.players.lastOnline[playerId];
+	};
+};
+
 export const selectPlayerData = (playerId: string) => {
 	return createSelector(
 		selectPlayerBalance(playerId),
@@ -53,12 +59,13 @@ export const selectPlayerData = (playerId: string) => {
 		selectPlayerUpgrades(playerId),
 		selectPlayerBoosts(playerId),
 		selectPlayerReceipts(playerId),
-		(balance, worlds, stats, slime, upgrades, boosts, receipts): PlayerData | undefined => {
-			if (!balance || !worlds || !stats || !slime || !upgrades || !boosts || !receipts) {
+		selectPlayerLastOnline(playerId),
+		(balance, worlds, stats, slime, upgrades, boosts, receipts, lastOnline): PlayerData | undefined => {
+			if (!balance || !worlds || !stats || !slime || !upgrades || !boosts || !receipts || !lastOnline) {
 				return;
 			}
 
-			return { balance, worlds, stats, slime, upgrades, boosts, receipts };
+			return { balance, worlds, stats, slime, upgrades, boosts, receipts, lastOnline };
 		},
 	);
 };

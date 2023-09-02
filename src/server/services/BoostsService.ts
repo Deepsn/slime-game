@@ -1,85 +1,51 @@
-import { Service, OnStart } from "@flamework/core";
+import { Service } from "@flamework/core";
 import { producer } from "server/producers";
-import { selectPlayerBoosts } from "shared/selectors";
+import { selectPlayerBoosts, selectPlayerLastOnline } from "shared/selectors";
 import { OnPlayer } from "./PlayerJoinService";
-import { PlayerBoosts } from "shared/slices/players";
+import { PlayerBoost, PlayerBoosts } from "shared/slices/players";
+import { createSelector } from "@rbxts/reflex";
 
 @Service()
 export class BoostService implements OnPlayer {
 	private boostsActive = new Map<Player, Map<keyof PlayerBoosts, number>>();
 
 	onPlayerJoin(player: Player): void {
-		this.boostsActive.set(player, new Map());
+		const boostsActive = new Map<keyof PlayerBoosts, number>();
+		const playerKey = tostring(player.UserId);
+		this.boostsActive.set(player, boostsActive);
 
-		const setBoostActive = (
-			boostsActive: Map<keyof PlayerBoosts, number>,
-			boosts: PlayerBoosts,
-			boostName: keyof PlayerBoosts,
-		) => {
-			const boost = boosts[boostName];
+		const removeBoost = (boostName: keyof PlayerBoosts) => {
+			producer.removeBoost(playerKey, boostName);
+			boostsActive.delete(boostName);
+		};
 
+		const setBoostActive = (boost: PlayerBoost | undefined, boostName: keyof PlayerBoosts) => {
 			if (!boost || boostsActive.has(boostName)) {
 				return;
 			}
 
-			const playerKey = tostring(player.UserId);
-
-			task.delay(boost.timeLeft, () => {
-				producer.removeBoost(playerKey, boostName);
-				boostsActive.delete(boostName);
-			});
-
+			const lastOnline = producer.getState(selectPlayerLastOnline(playerKey));
 			const now = DateTime.now().UnixTimestamp;
 
-			boostsActive.set(boostName, now + boost.timeLeft);
-			producer.setBoost(playerKey, boostName, { ...boost, endTick: now + boost.timeLeft });
+			const estimatedTimeLeft = boost.timeLeft;
+			const calculatedTimeLeft = lastOnline ? boost.endTick - lastOnline : 9e9;
+
+			const timeLeft = calculatedTimeLeft > estimatedTimeLeft ? estimatedTimeLeft : calculatedTimeLeft;
+
+			task.delay(timeLeft, () => removeBoost(boostName));
+
+			boostsActive.set(boostName, now + timeLeft);
+			producer.setBoost(playerKey, boostName, { timeLeft, endTick: now + timeLeft });
 		};
 
-		producer.subscribe(selectPlayerBoosts(tostring(player.UserId)), (boosts) => {
-			if (!boosts) {
-				return;
-			}
+		const selectPlayerBoost = (boostName: keyof PlayerBoosts) => {
+			return createSelector(selectPlayerBoosts(playerKey), (boosts) => {
+				return boosts?.[boostName];
+			});
+		};
 
-			const boostsActive = this.boostsActive.get(player);
-
-			if (!boostsActive) {
-				return;
-			}
-
-			if (boosts.coins2x) {
-				setBoostActive(boostsActive, boosts, "coins2x");
-			}
-
-			if (boosts.magnet2x) {
-				setBoostActive(boostsActive, boosts, "magnet2x");
-			}
-
-			if (boosts.xp2x) {
-				setBoostActive(boostsActive, boosts, "xp2x");
-			}
-		});
-	}
-
-	onPlayerLeave(player: Player): void {
-		const boostsActive = this.boostsActive.get(player);
-		this.boostsActive.delete(player);
-
-		if (boostsActive) {
-			const playerKey = tostring(player.UserId);
-			const now = DateTime.now().UnixTimestamp;
-
-			for (const [boostName, endTick] of boostsActive) {
-				if (endTick > now) {
-					const tickLeft = endTick - now; // seconds
-
-					producer.setBoost(playerKey, boostName, {
-						endTick,
-						timeLeft: tickLeft,
-					});
-				} else {
-					producer.removeBoost(playerKey, boostName);
-				}
-			}
-		}
+		producer.subscribe(selectPlayerBoost("coins2x"), (boost) => setBoostActive(boost, "coins2x"));
+		producer.subscribe(selectPlayerBoost("magnet2x"), (boost) => setBoostActive(boost, "magnet2x"));
+		producer.subscribe(selectPlayerBoost("xp2x"), (boost) => setBoostActive(boost, "xp2x"));
 	}
 }
