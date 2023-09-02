@@ -4,6 +4,7 @@ import { OnPlayer } from "./PlayerJoinService";
 import { Logger } from "@rbxts/log";
 import { PlayerBoosts } from "shared/slices/players";
 import { RootState, producer } from "server/producers";
+import { selectPlayerBoost } from "shared/selectors";
 
 @Service()
 export class ProductsService implements OnStart, OnPlayer {
@@ -74,11 +75,7 @@ export class ProductsService implements OnStart, OnPlayer {
 	}
 
 	hasBoost(player: Player, boostName: keyof PlayerBoosts) {
-		const selectPlayerBoost = (state: RootState) => {
-			return state.players.boosts[player.UserId]?.[boostName];
-		};
-
-		const boost = producer.getState(selectPlayerBoost);
+		const boost = producer.getState(selectPlayerBoost(tostring(player.UserId), boostName));
 
 		if (!boost) {
 			return false;

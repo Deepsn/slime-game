@@ -2,7 +2,7 @@ import { Controller, OnTick } from "@flamework/core";
 import { UIClass } from "../UIClass";
 import { BoostsFrame } from "./types";
 import { producer } from "client/producers";
-import { selectPlayerBoosts } from "shared/selectors";
+import { selectPlayerBoost, selectPlayerBoosts } from "shared/selectors";
 import { PlayerBoosts } from "shared/slices/players";
 import { createSelector } from "@rbxts/reflex";
 
@@ -18,13 +18,9 @@ export class BoostsController extends UIClass<BoostsFrame> implements OnTick {
 	}
 
 	onStart() {
-		const selectPlayerBoost = (boostName: keyof PlayerBoosts) => {
-			return createSelector(selectPlayerBoosts(tostring(this.localPlayer.UserId)), (boosts) => {
-				return boosts?.[boostName];
-			});
-		};
+		const playerKey = tostring(this.localPlayer.UserId);
 
-		producer.subscribe(selectPlayerBoost("xp2x"), (boost) => {
+		producer.subscribe(selectPlayerBoost(playerKey, "xp2x"), (boost) => {
 			if (!boost) {
 				this.xp2x = 0;
 				return;
@@ -33,7 +29,7 @@ export class BoostsController extends UIClass<BoostsFrame> implements OnTick {
 			this.xp2x = boost.endTick;
 		});
 
-		producer.subscribe(selectPlayerBoost("coins2x"), (boost) => {
+		producer.subscribe(selectPlayerBoost(playerKey, "coins2x"), (boost) => {
 			if (!boost) {
 				this.xp2x = 0;
 				return;
@@ -42,7 +38,7 @@ export class BoostsController extends UIClass<BoostsFrame> implements OnTick {
 			this.coins2x = boost.endTick;
 		});
 
-		producer.subscribe(selectPlayerBoost("magnet2x"), (boost) => {
+		producer.subscribe(selectPlayerBoost(playerKey, "magnet2x"), (boost) => {
 			if (!boost) {
 				this.xp2x = 0;
 				return;

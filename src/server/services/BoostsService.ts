@@ -1,6 +1,6 @@
 import { Service } from "@flamework/core";
 import { producer } from "server/producers";
-import { selectPlayerBoosts, selectPlayerLastOnline } from "shared/selectors";
+import { selectPlayerBoost, selectPlayerBoosts, selectPlayerLastOnline } from "shared/selectors";
 import { OnPlayer } from "./PlayerJoinService";
 import { PlayerBoost, PlayerBoosts } from "shared/slices/players";
 import { createSelector } from "@rbxts/reflex";
@@ -56,14 +56,8 @@ export class BoostService implements OnPlayer {
 			producer.setBoost(playerKey, boostName, { ...boost, timeLeft, endTick: now + timeLeft });
 		};
 
-		const selectPlayerBoost = (boostName: keyof PlayerBoosts) => {
-			return createSelector(selectPlayerBoosts(playerKey), (boosts) => {
-				return boosts?.[boostName];
-			});
-		};
-
-		producer.subscribe(selectPlayerBoost("coins2x"), (boost) => setBoostActive(boost, "coins2x"));
-		producer.subscribe(selectPlayerBoost("magnet2x"), (boost) => setBoostActive(boost, "magnet2x"));
-		producer.subscribe(selectPlayerBoost("xp2x"), (boost) => setBoostActive(boost, "xp2x"));
+		producer.subscribe(selectPlayerBoost(playerKey, "coins2x"), (boost) => setBoostActive(boost, "coins2x"));
+		producer.subscribe(selectPlayerBoost(playerKey, "magnet2x"), (boost) => setBoostActive(boost, "magnet2x"));
+		producer.subscribe(selectPlayerBoost(playerKey, "xp2x"), (boost) => setBoostActive(boost, "xp2x"));
 	}
 }
