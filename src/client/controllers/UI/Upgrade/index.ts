@@ -48,13 +48,10 @@ export class Upgrade extends UIClass<UpgradeFrame> {
 				continue;
 			}
 
-			const upgradeName = `${upgrade.Name.sub(1, 1).lower()}${upgrade.Name.gsub(" ", "")[0].sub(
-				2,
-				-1,
-			)}` as keyof PlayerUpgrades;
+			const upgradeName = upgrade.GetAttribute("UpgradeName") as keyof PlayerUpgrades;
 
 			upgradeButton.MouseButton1Click.Connect(() => {
-				buyUpgradeRemote.SendToServer(upgradeName as keyof PlayerUpgrades);
+				buyUpgradeRemote.SendToServer(upgradeName);
 			});
 		}
 
@@ -75,10 +72,7 @@ export class Upgrade extends UIClass<UpgradeFrame> {
 					continue;
 				}
 
-				const upgradeName = `${upgrade.Name.sub(1, 1).lower()}${upgrade.Name.gsub(" ", "")[0].sub(
-					2,
-					-1,
-				)}` as keyof PlayerUpgrades;
+				const upgradeName = upgrade.GetAttribute("UpgradeName") as keyof PlayerUpgrades;
 				const upgradeLevel = upgrades[upgradeName];
 
 				const upgradeCost = upgradesCosts[upgradeName];
