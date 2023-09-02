@@ -49,7 +49,7 @@ export class BoostService implements OnPlayer {
 			const estimatedTimeLeft = boost.timeLeft;
 			const calculatedTimeLeft = lastOnline ? boost.endTick - lastOnline : 9e9;
 
-			const timeLeft = calculatedTimeLeft > estimatedTimeLeft ? estimatedTimeLeft : calculatedTimeLeft;
+			const timeLeft = math.min(estimatedTimeLeft, calculatedTimeLeft);
 			const cancelThread = task.delay(timeLeft, () => removeBoost(boostName));
 
 			boostsActive.set(boostName, { receiptId: boost.receiptId, cancelThread, timeLeft });
